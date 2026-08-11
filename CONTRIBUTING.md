@@ -13,6 +13,16 @@ ln -s "$PWD/curtain" ~/.claude/skills/curtain
 It loads as `curtain@skills-dir` on the next session. Changes to `bin/`, `.mcp.json` or
 the manifest need `/reload-plugins`; skill edits do not.
 
+**Pick one install, not both.** The README's marketplace install and this symlink are
+alternatives. Running both gives you two copies of Curtain: a live one and a frozen one,
+with duplicate skills, two browser MCP servers, and two `bin/curtain` on `PATH`, whose
+precedence you are not choosing deliberately. Adding the marketplace is harmless, since
+it only registers a source; installing from it while the symlink is active is not.
+
+```bash
+claude plugin list | grep -A 3 curtain   # expect exactly one entry while developing
+```
+
 Verify the plugin is seen and both manifests are well formed:
 
 ```bash
