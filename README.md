@@ -34,29 +34,26 @@ claude plugin validate .claude-plugin/marketplace.json --strict
 Note that pointing `validate` at the repo root resolves the *marketplace*
 manifest, so validate the two files explicitly.
 
-### Is `curtain` on PATH?
+### `curtain` is on PATH
 
 Claude Code adds an enabled plugin's `bin/` directory to the Bash tool's `PATH`,
-which is why the skills call a bare `curtain`. This is confirmed for
-marketplace-installed plugins: their `~/.claude/plugins/cache/<plugin>/<version>/bin`
-directories appear on `PATH`.
+which is why the skills call a bare `curtain` with no `${CLAUDE_PLUGIN_ROOT}`
+plumbing.
 
-**Whether it also applies to `@skills-dir` plugins is not yet confirmed**, because
-it cannot be observed in the session that created the symlink. After
-`/reload-plugins` or in a fresh session, run:
-
-```bash
-curtain --version   # expect 0.1.0
-```
-
-If that resolves, a bare `curtain` is correct everywhere. If it reports "command
-not found", call the absolute path instead:
+**This is verified for both install paths**, which is worth stating because they
+work differently: a marketplace install is copied into
+`~/.claude/plugins/cache/<plugin>/<version>/`, while a `@skills-dir` plugin is
+discovered in place. Both get their `bin/` on `PATH`, symlink included:
 
 ```bash
-"${CLAUDE_PLUGIN_ROOT}"/bin/curtain --version
+$ which curtain
+/Users/you/.claude/skills/curtain/bin/curtain
+$ curtain --version
+0.1.0
 ```
 
-The skills accept either, so nothing breaks while this is open.
+Note this cannot be observed in the session that created the symlink; it needs
+`/reload-plugins` or a fresh session first.
 
 ## Tests
 
