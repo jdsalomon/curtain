@@ -1,0 +1,13 @@
+{
+  "apps": {
+    "admin": {
+      "start": "node app.mjs admin",
+      "ready": "curtain-fixture ready",
+      "fingerprint": { "path": "/login", "expect": "name=\"password\"" }
+    },
+    "guest": {
+      "start": "node app.mjs guest",
+      "ready": "curtain-fixture ready"
+    }
+  }
+}
