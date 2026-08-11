@@ -1,0 +1,16 @@
+{
+  "name": "curtain",
+  "version": "0.1.0",
+  "description": "Bring your dev services up, seed them, walk them, record the walk, tear them down.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "engines": { "node": ">=20.11" },
+  "bin": { "curtain": "./bin/curtain" },
+  "scripts": {
+    "test": "node --test test/unit/*.test.mjs test/integration/*.test.mjs",
+    "test:unit": "node --test test/unit/*.test.mjs",
+    "test:integration": "node --test test/integration/*.test.mjs",
+    "gate:vocab": "bash scripts/vocab-gate.sh"
+  }
+}

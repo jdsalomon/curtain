@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "curtain",
+  "displayName": "Curtain",
+  "version": "0.1.0",
+  "description": "Know and control your dev services. Playwright writes the script. Curtain stages it.",
+  "author": { "name": "Julien Salomon", "url": "https://github.com/jdsalomon" },
+  "homepage": "https://github.com/jdsalomon/curtain",
+  "repository": "https://github.com/jdsalomon/curtain",
+  "license": "MIT",
+  "keywords": ["dev-loop", "e2e", "playwright", "demo", "recording", "monorepo", "worktree"],
+  "mcpServers": "./.mcp.json"
+}
