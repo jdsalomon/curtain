@@ -14,7 +14,7 @@ function docs() {
     if (existsSync(p)) files.push([`skills/${name}/SKILL.md`, readFileSync(p, 'utf8')])
   }
   const named = [
-    'README.md', 'fixture/README.md', 'CHANGELOG.md',
+    'README.md', 'fixture/README.md', 'CHANGELOG.md', 'CONTRIBUTING.md',
     'ROADMAP.md', 'docs/DESIGN.md', 'docs/BRAND.md',
   ]
   for (const name of named) {
@@ -111,10 +111,16 @@ test('no user-facing doc uses an em dash', () => {
   }
 })
 
+// Screaming-snake identifiers that are environment variables, not problem codes.
+const KNOWN_CONSTANTS = new Set([
+  'CURTAIN_VOCAB_PATTERN', 'CURTAIN_TARGET', 'CURTAIN_TENANT', 'CLAUDE_PLUGIN_ROOT',
+])
+
 test('every problem code a doc branches on is a real code', async () => {
   const { CODES } = await import('../../lib/problems.mjs')
   for (const [file, body] of docs()) {
     for (const m of body.matchAll(/`(([A-Z]+_){1,3}[A-Z]+)`/g)) {
+      if (KNOWN_CONSTANTS.has(m[1])) continue
       assert.ok(CODES[m[1]], `${file} branches on \`${m[1]}\`, which is not a problem code`)
     }
   }
