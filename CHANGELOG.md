@@ -14,9 +14,10 @@ First release. Know and control your dev services.
 - `curtain setup` detects how a project starts and writes `curtain.json`
 - Service identity comes from who started the process, with the announced
   loopback URL as the primary source and the process group's own listener as the
-  fallback, so it is correct under Turbopack, turbo and nx
+  fallback, because two apps in one repository share a git root and paths cannot
+  tell them apart
 - Listeners are classified by resolving each one's cwd to its own git root, so a
-  worktree living inside its parent checkout is correctly foreign
+  worktree living inside its parent checkout is correctly another checkout's
 - Ships Playwright MCP, used from v0.3.0 onward
 - A dependency-free fixture app that is both the tutorial and the test target
 

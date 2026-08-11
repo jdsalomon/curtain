@@ -15,10 +15,16 @@ Five dev servers across four checkouts of the same repo. Which one is on 3001?
 Which branch is it running? Your test just passed, but against whose code?
 
 Curtain answers by asking who started each process, not by guessing from paths.
-It resolves every listener's cwd to that cwd's own git root and compares roots
-exactly, which is the only method that survives a worktree living inside its
-parent checkout, and the only method that survives Turbopack, `turbo dev` and
-`nx`, where every app reports the repo root as its cwd.
+
+It resolves every listener's working directory to that directory's own git root
+and compares roots exactly. That is the only method that survives a worktree
+living inside its parent checkout, which is the normal layout and which every
+path-prefix check gets wrong.
+
+Which *checkout* a server belongs to is as far as paths can take you, though: two
+apps in one repository share a git root. Which *app* it is comes from provenance,
+the loopback URL the app announced when Curtain started it, with the process
+group's own listener as the fallback for apps that print nothing.
 
 ## Install
 
@@ -105,10 +111,17 @@ Node `>=20.11`. The test scripts pass shell-expanded globs rather than directory
 names, because Node 22 stopped scanning a bare directory positional while Node 20
 still does; explicit file paths work on both.
 
-## Roadmap
+## Where this is going
 
-Curtain's ambition, and what is deliberately out of scope, is in
-[ROADMAP.md](ROADMAP.md). Nothing beyond v0.1.0 is released yet.
+Curtain's ambition is to make the local development loop fast and boring for anyone, in any repo:
+up, seeded, driven, recorded, down.
+
+v0.1.0 is the services layer. Isolated data, recordings that double as tests, one declaration
+rendered as either a demo or a suite, and a cache that makes each new recording cheaper are the
+releases after it.
+
+See [ROADMAP.md](ROADMAP.md) for the arc and [docs/DESIGN.md](docs/DESIGN.md) for why it is built
+this way.
 
 ## License
 
