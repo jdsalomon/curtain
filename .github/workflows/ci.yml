@@ -1,0 +1,31 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Both platforms are non-negotiable: reading a process's cwd goes
+          # through /proc on Linux and lsof on macOS, which is different code.
+          # The 20.11 job is what proves the engines floor is real.
+          - { os: ubuntu-latest, node: '20.11' }
+          - { os: ubuntu-latest, node: '22' }
+          - { os: macos-latest, node: '22' }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: no dependencies to install
+        run: test ! -f package-lock.json && echo "zero-dep by design"
+      - run: npm run test:unit
+      - run: npm run test:integration
+      - name: vocabulary gate
+        run: npm run gate:vocab
