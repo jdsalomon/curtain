@@ -2,3 +2,4 @@ node_modules/
 .curtain/
 *.log
 .DS_Store
+.vocab-denylist

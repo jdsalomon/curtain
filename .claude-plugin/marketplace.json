@@ -1,12 +1,12 @@
 {
   "name": "curtain",
   "owner": { "name": "Julien Salomon", "url": "https://github.com/jdsalomon" },
-  "description": "Curtain, a portable dev-loop harness for Claude Code.",
+  "description": "Curtain, a portable dev-loop harness for coding agents.",
   "plugins": [
     {
       "name": "curtain",
       "source": "./",
-      "description": "Know and control your dev services, then record walks that double as tests.",
+      "description": "Let your agents show you what they built: up, driven, recorded, down.",
       "license": "MIT",
       "repository": "https://github.com/jdsalomon/curtain",
       "keywords": ["dev-loop", "e2e", "playwright", "demo"]

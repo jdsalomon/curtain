@@ -3,7 +3,7 @@
   "name": "curtain",
   "displayName": "Curtain",
   "version": "0.1.0",
-  "description": "Know and control your dev services. Playwright writes the script. Curtain stages it.",
+  "description": "Let your agents show you what they built. Bring the stack up, drive the real app, record what happened, tear it down.",
   "author": { "name": "Julien Salomon", "url": "https://github.com/jdsalomon" },
   "homepage": "https://github.com/jdsalomon/curtain",
   "repository": "https://github.com/jdsalomon/curtain",

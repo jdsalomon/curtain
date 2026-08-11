@@ -2,7 +2,8 @@
 
 ## 0.1.0
 
-First release. Know and control your dev services.
+First release: the somewhere. Everything an agent does to your app happens somewhere, and this is
+that layer, shipped alone and shipped properly. Recording arrives in 0.3.0.
 
 - `curtain up` starts only what is not running and reuses what is healthy
 - `curtain down` stops exactly what this workspace started, by process group,
@@ -20,5 +21,7 @@ First release. Know and control your dev services.
   worktree living inside its parent checkout is correctly another checkout's
 - Ships Playwright MCP, used from v0.3.0 onward
 - A dependency-free fixture app that is both the tutorial and the test target
+- Harness-portable by construction: nothing under `lib/` knows what is calling it, so
+  the Claude Code plugin manifest is the only harness-specific file
 
 Platforms: macOS and Linux. Windows reports `UNSUPPORTED_PLATFORM`.

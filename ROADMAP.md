@@ -1,14 +1,18 @@
 # Roadmap
 
-Curtain's ambition is small to describe and large to build: **make the local development loop fast
-and boring for anyone, in any repo.**
+Curtain's ambition is small to describe and large to build: **your agent should never have to say
+"it works, trust me."**
 
-Bring the stack up. Get data that is yours alone. Drive it. Record what you built. Tear it down. Do
-all of it in one command each, in a repo Curtain has never seen, without a wiki page telling you
-which port is which.
+Bring the stack up. Give it data of its own. Drive the real app in a real browser. Record what
+happened. Tear it down. One command each, in a repo Curtain has never seen, without a wiki page
+telling anyone which port is which.
 
-**Status: nothing is released yet.** v0.1.0 is in development. Everything after v0.1.0 is a plan, not
-a promise, and the versions are the order of work rather than dates.
+An agent that can do that stops reporting and starts showing. That is the whole thesis: the gap
+between "I implemented it" and "here it is working" is where trust in agentic work is currently lost,
+and it is a tooling gap rather than a model one.
+
+**Status: v0.1.0 is the only release.** Everything after it is a plan, not a promise, and the
+versions are the order of work rather than dates.
 
 ## Why this exists
 
@@ -32,10 +36,14 @@ written down where they can go stale.
 
 ## The releases
 
-### v0.1.0, know and control your services · in development
+### v0.1.0, the somewhere · released
 
-Never drive the wrong server again. `curtain up` starts what is missing and reuses what is already
-healthy. `curtain down` stops exactly what this workspace started and leaves other checkouts alone.
+Everything an agent does to your app happens somewhere, and getting that somewhere right is the
+unglamorous half nobody builds. An agent that drives the wrong server demos someone else's branch and
+is completely convincing about it.
+
+So this release is only that. `curtain up` starts what is missing and reuses what is already healthy.
+`curtain down` stops exactly what this workspace started and leaves other checkouts alone.
 `curtain doctor` says whether anything is blocking you.
 
 Service identity comes from **who started the process**, not from guessing at paths. Paths cannot
@@ -44,6 +52,7 @@ server belongs to and never which app it is. Some setups make it worse by runnin
 repository root. Listeners nobody claims are reported, never adopted.
 
 *You get:* five servers, five correct answers, and a stop command that cannot kill your colleague's.
+Every later release stands on this one.
 
 ### v0.2.0, isolated data per workspace · planned
 
@@ -128,6 +137,23 @@ Three rules keep it honest, and they are deliberate limits rather than caveats:
 
 *You get:* interactions that repair themselves, and surfaces that were previously untestable.
 
+## Which agent harness
+
+Curtain is **not built for one agent harness.** The engine is a zero-dependency Node CLI plus an MCP
+server, which is deliberately the most portable shape available: a command any harness can run, and a
+protocol several already speak. Nothing under `lib/` knows what is calling it.
+
+What is harness-specific is only the packaging. Today that means a Claude Code plugin manifest, which
+buys skill discovery, an MCP server that installs with the plugin, and `bin/` on the tool `PATH`.
+Everywhere else you clone it, put the binary on your `PATH`, and register the MCP server yourself.
+
+The prose half is markdown with YAML frontmatter, which is close enough to what most harnesses want
+that porting it is editing, not rewriting.
+
+**Planned:** first-class packaging for other harnesses, once there is more than one shape worth
+supporting. Not sooner, because guessing at an abstraction before the second real case is how you get
+an adapter layer that fits nothing.
+
 ## What "released" means here
 
 Each version has to clear three gates before it is tagged. They are checkable, not aspirational.
@@ -142,7 +168,7 @@ Each version has to clear three gates before it is tagged. They are checkable, n
 
 Saying no is most of the design.
 
-- **No engine choice.** One browser harness, shipped and owned. There is no adapter layer and no way
+- **No engine choice.** One browser driver, shipped and owned. There is no adapter layer and no way
   to plug in your own, because a tool that supports everything documents nothing.
 - **No test framework.** Curtain runs your loop. Your assertions stay yours.
 - **No pixel assertions on video.** Still-image baselines per scene, yes. Asserting on the contents

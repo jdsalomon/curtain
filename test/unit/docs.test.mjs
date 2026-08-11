@@ -13,7 +13,11 @@ function docs() {
     const p = join(SKILLS, name, 'SKILL.md')
     if (existsSync(p)) files.push([`skills/${name}/SKILL.md`, readFileSync(p, 'utf8')])
   }
-  for (const name of ['README.md', 'fixture/README.md', 'CHANGELOG.md', 'ROADMAP.md', 'docs/DESIGN.md']) {
+  const named = [
+    'README.md', 'fixture/README.md', 'CHANGELOG.md',
+    'ROADMAP.md', 'docs/DESIGN.md', 'docs/BRAND.md',
+  ]
+  for (const name of named) {
     const p = join(ROOT, name)
     if (existsSync(p)) files.push([name, readFileSync(p, 'utf8')])
   }
@@ -26,13 +30,23 @@ function docs() {
 const KNOWN_NON_COMMANDS = new Set(['detect', 'apply'])
 
 // Docs that may promise the future, and docs that may only describe the present.
-const FORWARD_LOOKING = new Set(['ROADMAP.md', 'docs/DESIGN.md'])
+const FORWARD_LOOKING = new Set(['ROADMAP.md', 'docs/DESIGN.md', 'docs/BRAND.md'])
 
 const operational = () => docs().filter(([f]) => !FORWARD_LOOKING.has(f))
 const forward = () => docs().filter(([f]) => FORWARD_LOOKING.has(f))
 
+/** Only code-formatted text can hold a command reference. Scanning prose as well
+ *  reads "crimson curtain panels swept aside" in a design note as a call to
+ *  `curtain panels`, and the word is in the product's name, so this recurs. */
+function codeOnly(body) {
+  const parts = []
+  for (const m of body.matchAll(/```[\s\S]*?```/g)) parts.push(m[0])
+  for (const m of body.matchAll(/`[^`\n]+`/g)) parts.push(m[0])
+  return parts.join('\n')
+}
+
 const referenced = (body) =>
-  [...body.matchAll(/\bcurtain[ \t]+([a-z][a-z-]*)/g)]
+  [...codeOnly(body).matchAll(/\bcurtain[ \t]+([a-z][a-z-]*)/g)]
     .map((m) => m[1])
     .filter((w) => !KNOWN_NON_COMMANDS.has(w))
 

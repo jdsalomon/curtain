@@ -1,0 +1,14 @@
+# Vocabulary that must never appear in this repo, one entry per line.
+# Entries are extended-regex fragments, joined with | and matched case-insensitively.
+#
+# Copy to `.vocab-denylist` (gitignored) and fill in the nouns of the codebase you
+# extracted from: the product name, its domain nouns, its test accounts, its
+# vendors. The real list stays out of git on purpose, because committing a private
+# product's nouns to a public repo publishes exactly what the gate exists to remove.
+#
+# A fork with nothing to scrub can ignore this entirely: with no denylist the gate
+# skips.
+
+# acme-corp
+# widget
+# admin@example\.test

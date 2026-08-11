@@ -44,10 +44,16 @@ Curtain is an extraction, not an invention, and three things from the original w
 Global engine, per-project facts, per-project artifacts. Nothing about your project is ever stored
 inside the plugin.
 
+A second boundary matters as much: **nothing under `lib/` knows which agent harness is calling it.**
+The engine is a zero-dependency Node CLI plus an MCP server, because that is the most portable shape
+on offer, a command anything can run and a protocol several harnesses already speak. Harness-specific
+packaging is a thin outer layer, currently a Claude Code plugin manifest, and it is the only part that
+would need writing again for a second harness.
+
 ```
 the plugin (installed once, global)
-  .claude-plugin/plugin.json
-  .mcp.json                  the browser engine, shipped
+  .claude-plugin/plugin.json  # the only harness-specific file
+  .mcp.json                  the browser driver, shipped
   skills/                    prose and judgment, ~40 lines each
   bin/curtain                # the deterministic surface
   lib/                       tested modules
@@ -153,7 +159,7 @@ Settled during design and recorded so they are not relitigated.
 |---|---|---|
 | 1 | Ship as a plugin, installed once, working across projects | A plugin can ship its own engine config, so installing the tool installs the engine |
 | 2 | Opinionated, no bring-your-own-tools | No adapter layer. One engine, one loop. A tool that supports everything documents nothing |
-| 3 | One browser harness, shipped and owned | Removes a framework dependency the original had, and removes the "which one is this using" question entirely |
+| 3 | One browser driver, shipped and owned | Removes a framework dependency the original had, and removes the "which one is this using" question entirely |
 | 4 | Delegate browser mechanics upstream, own the loop | Selectors, tracing, storage state and request mocking are maintained by people who do only that |
 | 5 | Detect first, ask only about the gaps | A detected fact cannot rot. An answered question can |
 | 6 | Fat CLI, thin skills | Mechanics in tested code, judgment in prose. Fewer turns, less context, fewer retries |
@@ -268,10 +274,15 @@ The extension points are real, and so are the refusals.
 same. Your provisioning and teardown commands, which Curtain calls and never replaces, because it
 cannot know what your data means. Your start commands, your ready markers, your fingerprints.
 
-**Where you are deliberately not:** the browser harness. There is no adapter layer and there will not
-be one, because supporting two engines means documenting neither well and testing neither
+**Where you are deliberately not:** the browser driver. There is no adapter layer and there will not
+be one, because supporting two drivers means documenting neither well and testing neither
 thoroughly. The loop itself, which is the opinion the tool exists to have. And the directory
 contract, because committed-versus-ignored is load-bearing rather than stylistic.
+
+**Worth separating from both:** the agent harness. Refusing a second browser driver is a real
+opinion, and it is not the same as refusing a second harness. The CLI is portable by construction, so
+a second harness costs a packaging layer rather than an abstraction, and that is a cost worth paying
+once there is a second real case to fit.
 
 If the loop is wrong for you, forking is a better answer than a plugin API. That is a real position,
 not a dismissal: a tool with a plugin API for its core loop has no core loop.

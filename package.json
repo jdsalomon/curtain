@@ -1,7 +1,7 @@
 {
   "name": "curtain",
   "version": "0.1.0",
-  "description": "Bring your dev services up, seed them, walk them, record the walk, tear them down.",
+  "description": "Let your agents show you what they built: bring the stack up, drive the real app, record what happened, tear it down.",
   "type": "module",
   "private": true,
   "license": "MIT",
