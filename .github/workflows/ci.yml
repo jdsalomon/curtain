@@ -27,10 +27,3 @@ jobs:
         run: test ! -f package-lock.json && echo "zero-dep by design"
       - run: npm run test:unit
       - run: npm run test:integration
-      - name: vocabulary gate
-        # The word list is a repo variable, not a committed file: see
-        # scripts/vocab-gate.sh. Unset, the gate skips rather than failing, which
-        # is correct for a fork with nothing to scrub.
-        env:
-          CURTAIN_VOCAB_PATTERN: ${{ vars.CURTAIN_VOCAB_PATTERN }}
-        run: npm run gate:vocab

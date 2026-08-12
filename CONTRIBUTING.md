@@ -71,24 +71,6 @@ design question rather than a flake:
 - **Every command named in a document exists.** The guard against prose describing
   mechanics that are no longer there.
 
-## The vocabulary gate
-
-Curtain was extracted from a private codebase, and `scripts/vocab-gate.sh` fails the build
-if that codebase's vocabulary appears anywhere here. The tool must not know where it came
-from.
-
-**The word list is deliberately not in this repo.** A denylist of a private product's
-nouns, committed to a public repo, publishes exactly what it exists to remove. Supply it
-one of two ways:
-
-```bash
-CURTAIN_VOCAB_PATTERN='foo|bar' npm run gate:vocab
-# or copy .vocab-denylist.example to .vocab-denylist (gitignored)
-```
-
-With neither present the gate skips and says so, which is the right behaviour for a fork
-with nothing to scrub. CI supplies it as a repository variable.
-
 ## House rules
 
 - **Mechanics in tested code, judgment in prose.** A skill over 60 lines fails the doc

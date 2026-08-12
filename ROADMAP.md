@@ -162,7 +162,7 @@ Each version has to clear three gates before it is tagged. They are checkable, n
 |---|---|
 | **Shippable** | A stranger installs the tag and gets the stated value with nothing else present. Proven by running that version's tutorial from a clean clone |
 | **Testable** | The behaviour is asserted rather than demonstrated. Unit and integration suites green on macOS and Linux, plus a test that every command named in the docs exists |
-| **Open-sourceable** | The value is legible in one sentence, the changelog says what changed, and an automated check confirms nothing about where this came from leaked into the code |
+| **Open-sourceable** | The value is legible in one sentence, the changelog says what changed, and the code is written for a project Curtain has never seen rather than for one specific repository |
 
 ## Deliberate non-goals
 

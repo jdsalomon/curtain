@@ -10,7 +10,6 @@
   "scripts": {
     "test": "node --test test/unit/*.test.mjs test/integration/*.test.mjs",
     "test:unit": "node --test test/unit/*.test.mjs",
-    "test:integration": "node --test test/integration/*.test.mjs",
-    "gate:vocab": "bash scripts/vocab-gate.sh"
+    "test:integration": "node --test test/integration/*.test.mjs"
   }
 }

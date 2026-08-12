@@ -262,10 +262,6 @@ Three tests carry more weight than the rest:
 could; and video encoding output, beyond the file existing and being non-trivial in size. Asserting
 on the contents of an mp4 is a non-goal, permanently.
 
-There is also a vocabulary gate. Curtain was extracted from a specific product, and an automated
-check fails the build if any of that product's nouns appear anywhere in the repository. The tool must
-not know where it came from.
-
 ## How to disagree with this
 
 The extension points are real, and so are the refusals.
