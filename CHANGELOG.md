@@ -1,9 +1,37 @@
 # Changelog
 
+## 0.2.0
+
+A recording that is also a test. `curtain walk` drives the real app in a real browser and films it,
+and because a missing element throws, a clean video is a passing test rather than a claim.
+
+- `curtain walk <name>` runs a walk; `curtain walk` lists what this project has
+- A walk is a module Curtain imports and hands a toolkit, not a script you run, so it
+  imports no Playwright and resolves no path into the plugin
+- A walk names the app it drives and never a port, which is what 0.1.0 was for: the
+  resolver supplies the URL, so a recording cannot land on a stale port or another
+  worktree's server
+- An mp4 is written only for a run that passed, and the artifact directory is wiped
+  before recording, so a failed run cannot leave a file that passes for a fresh one
+- A failed run keeps its raw webm, because the frames before a failure usually explain it
+- A synthetic cursor with click ripples, since a screencast captures no OS pointer. It
+  carries a light ring outside the accent ring so it stays visible on dark surfaces
+- `cleanup` runs even when the walk throws, while the page and request context are alive,
+  and its own failure is reported separately rather than replacing the original error
+- A target that does not classify as local is refused; `--force` is the only way past it
+- Playwright and ffmpeg are resolved when a walk needs them, never depended on, so the
+  engine stays dependency-free and `curtain up` costs nobody a browser download.
+  `CURTAIN_PLAYWRIGHT` points at an install that lives elsewhere
+- Artifacts land in `.curtain/walks/<name>/`, one directory per walk per workspace, so two
+  branches recording at once cannot overwrite each other
+- The fixture is dressed like a real product, because it is what the recording shows
+
+Platforms: macOS and Linux. Windows reports `UNSUPPORTED_PLATFORM`.
+
 ## 0.1.0
 
 First release: the somewhere. Everything an agent does to your app happens somewhere, and this is
-that layer, shipped alone and shipped properly. Recording arrives in 0.3.0.
+that layer, shipped alone and shipped properly. Recording arrives in 0.2.0.
 
 - `curtain up` starts only what is not running and reuses what is healthy
 - `curtain down` stops exactly what this workspace started, by process group,
@@ -19,7 +47,7 @@ that layer, shipped alone and shipped properly. Recording arrives in 0.3.0.
   tell them apart
 - Listeners are classified by resolving each one's cwd to its own git root, so a
   worktree living inside its parent checkout is correctly another checkout's
-- Ships Playwright MCP, used from v0.3.0 onward
+- Ships Playwright MCP, used from 0.2.0 onward
 - A dependency-free fixture app that is both the tutorial and the test target
 - Harness-portable by construction: nothing under `lib/` knows what is calling it, so
   the Claude Code plugin manifest is the only harness-specific file

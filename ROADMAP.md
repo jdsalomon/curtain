@@ -11,7 +11,7 @@ An agent that can do that stops reporting and starts showing. That is the whole 
 between "I implemented it" and "here it is working" is where trust in agentic work is currently lost,
 and it is a tooling gap rather than a model one.
 
-**Status: v0.1.0 is the only release.** Everything after it is a plan, not a promise, and the
+**Status: v0.2.0 is the current release.** Everything after it is a plan, not a promise, and the
 versions are the order of work rather than dates.
 
 ## Why this exists
@@ -54,7 +54,25 @@ repository root. Listeners nobody claims are reported, never adopted.
 *You get:* five servers, five correct answers, and a stop command that cannot kill your colleague's.
 Every later release stands on this one.
 
-### v0.2.0, isolated data per workspace · planned
+### v0.2.0, a recording that is also a test · released
+
+`curtain walk` drives your app and records it, with a synthetic cursor, because a screen recording
+captures no mouse pointer. If an element is missing, the run throws and exits non-zero.
+
+That is the whole trick: **a clean video is a passing test.** One artifact, two jobs, no extra
+authoring. An mp4 is written only for a run that passed, so the rule is enforced by the filesystem
+rather than by anyone remembering to check; a failed run keeps its raw webm, since the frames before
+a failure usually explain it. Data a run created is reversed even when the run crashes, and a target
+that does not classify as local is refused rather than recorded against.
+
+A walk names the app it drives and never a port, which is what v0.1.0 was for. Playwright and ffmpeg
+are resolved when a walk needs them rather than depended on, so the engine stays dependency-free and
+nobody downloads a browser to run `curtain up`.
+
+*You get:* the thing you paste into a pull request, which is simultaneously the thing that proves it
+works.
+
+### v0.3.0, isolated data per workspace · planned
 
 `curtain seed` runs **your** provisioning command and confirms it worked. Each workspace gets its own
 data, so two branches, or two agents, can work at once without overwriting each other.
@@ -67,18 +85,6 @@ counts and sizes, and deletes nothing.
 
 *You get:* parallel work that does not corrupt itself, and a cleanup you can trust because it shows
 its work first.
-
-### v0.3.0, a recording that is also a test · planned
-
-`curtain walk` drives your app and records it, with a synthetic cursor, because a screen recording
-captures no mouse pointer. If an element is missing, the run throws and exits non-zero.
-
-That is the whole trick: **a clean video is a passing test.** One artifact, two jobs, no extra
-authoring. Data a run created is reversed even when the run crashes, and there is a safety rail
-before anyone points this at production.
-
-*You get:* the thing you paste into a pull request, which is simultaneously the thing that proves it
-works.
 
 ### v0.4.0, one declaration, demo or test · planned
 

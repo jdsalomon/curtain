@@ -20,14 +20,15 @@ drive the real app in a real browser, record what happened, tear it down.
 
 ---
 
-> **v0.1.0 ships the first piece: the somewhere.** Everything an agent does to your app
+> **v0.2.0 records.** v0.1.0 built the somewhere: everything an agent does to your app
 > has to happen against a specific server, and getting that right is the part that
-> quietly breaks. Recording arrives in v0.3.0. The [roadmap](ROADMAP.md) marks every
-> unreleased version as planned, on purpose.
+> quietly breaks. This release drives that server and films it. Seeding is next. The
+> [roadmap](ROADMAP.md) marks every unreleased version as planned, on purpose.
 
 ## Try it in under a minute
 
-No install, no dependencies, no database. The fixture is two real apps in ~80 lines:
+No install, no dependencies, no database. The fixture is two real apps in a single
+file you can read in a minute:
 
 ```console
 $ cd fixture
@@ -42,6 +43,45 @@ reused   guest      http://localhost:52903  pid 10885
 
 Nothing restarted the second time, which is the point: a cold framework compile costs
 more than everything else this tool does put together.
+
+Now make it prove itself. The walk signs in, adds an item, and waits for the card to
+go green, all against whichever port the resolver just found:
+
+```console
+$ curtain walk add-an-item
+walk     add-an-item
+target   admin at http://localhost:52902
+video    /Users/you/code/curtain/.curtain/walks/add-an-item/add-an-item.mp4
+gif      /Users/you/code/curtain/.curtain/walks/add-an-item/add-an-item.gif
+
+passed
+```
+
+<div align="center">
+<img src="assets/walk-demo.gif" alt="Curtain signing in to the fixture app, adding an item, and the card turning green" width="260">
+</div>
+
+That gif is not a mockup. It is the file that command wrote, and Curtain recorded it
+by driving the app in this repository.
+
+Now break it on purpose, and watch what does **not** appear:
+
+```console
+$ curtain walk _broken
+walk     _broken
+target   admin at http://localhost:52902
+webm     .curtain/walks/_broken/video/page@2d23da55.webm
+
+WALK_FAILED
+  locator.boundingBox: Timeout 30000ms exceeded.
+  the recording up to the failure is at .curtain/walks/_broken/video/page@2d23da55.webm
+
+FAILED
+```
+
+Exit 1, and no mp4. A shareable video exists only for a run that passed, so a clean
+recording is a passing test rather than a promise. The raw webm is kept, because the
+frames leading up to a failure are usually the fastest way to understand it.
 
 Now start a rival copy from its own git root and watch Curtain refuse to adopt it:
 
@@ -93,6 +133,7 @@ this and what happens under monorepo task runners.
 |---|---|
 | `/setup` | detects how your project starts, asks only what it cannot detect |
 | `/up` | starts what is missing, reuses what is healthy |
+| `/walk` | drives the app in a real browser and records it |
 | `/down` | stops exactly what this workspace started |
 
 Under the skills is a CLI you can run yourself:
@@ -102,11 +143,35 @@ curtain doctor            # can this phase run, and what debt has piled up
 curtain resolve --json    # the raw truth, for when you want to see it
 curtain up   [app...]
 curtain down [app...]
+curtain walk [name]       # no name lists them
 curtain setup detect | apply
 ```
 
 Every command takes `--json`. Failures are values with stable codes and a `fix` line,
 never a stack trace, so an agent branches on the code and never on wording.
+
+A walk lives in `curtain/walks/<name>.mjs` and is a module Curtain calls, not a script
+you run. So it imports no Playwright, resolves no paths into the plugin, and above all
+names **no port**:
+
+```js
+export const meta = { target: 'admin', viewport: 'phone' }
+
+export default async function ({ page, url, click, type, sleep }) {
+  await page.goto(url('/login'))
+  await type(page.getByLabel('Email'), 'ada@example.com')
+  await click(page.getByRole('button', { name: 'Sign in' }))
+  await page.locator('.saved').waitFor()   // the assertion is the demo
+  await sleep(1200)                        // let the payoff land on camera
+}
+
+export async function cleanup({ request, url }) {   // runs even if the walk throws
+  await request.delete(url('/items'))
+}
+```
+
+`target: 'admin'` is the entire address. Whatever port that app landed on this morning,
+in this worktree, is the resolver's problem and never the walk's.
 
 ## Install
 
