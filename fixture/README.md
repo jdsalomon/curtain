@@ -29,3 +29,4 @@ Then put it all back:
 | `app.mjs quiet` | listens, announces no URL | forces port discovery to have a fallback |
 | `rogue.mjs` | the same app from another git root | `foreign`, so it must not be adopted or killed |
 | `deaf.mjs` | accepts connections, never answers | `NOT_ANSWERING`: an open port is not an app |
+| `app.mjs vip` | exits unless `--env-file` hands it `VIP_CODE` | an app that needs configuration to boot, for the env machinery |

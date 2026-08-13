@@ -3,9 +3,17 @@
 import { createServer } from 'node:http'
 
 const ROLE = process.argv[2] ?? 'admin'
-if (!['admin', 'guest', 'quiet'].includes(ROLE)) {
-  console.error(`usage: node app.mjs <admin|guest|quiet>`)
+if (!['admin', 'guest', 'quiet', 'vip'].includes(ROLE)) {
+  console.error(`usage: node app.mjs <admin|guest|quiet|vip>`)
   process.exit(2)
+}
+
+// The vip role needs configuration to boot, the way real apps do. Started via
+// `node --env-file=.env.local`, it is the surface the env machinery tests
+// against: no file, no server.
+if (ROLE === 'vip' && !process.env.VIP_CODE) {
+  console.error('vip: VIP_CODE is not set; start me with --env-file=.env.local')
+  process.exit(1)
 }
 
 let items = []

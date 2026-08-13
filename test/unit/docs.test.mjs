@@ -33,7 +33,7 @@ const KNOWN_NON_COMMANDS = new Set(['detect', 'apply'])
 const FORWARD_LOOKING = new Set(['ROADMAP.md', 'docs/DESIGN.md', 'docs/BRAND.md'])
 
 // Screaming-snake names a doc may use that are not problem codes.
-const ENV_VARS = new Set(['CURTAIN_PLAYWRIGHT'])
+const ENV_VARS = new Set(['CURTAIN_PLAYWRIGHT', 'VIP_CODE'])
 
 const operational = () => docs().filter(([f]) => !FORWARD_LOOKING.has(f))
 const forward = () => docs().filter(([f]) => FORWARD_LOOKING.has(f))

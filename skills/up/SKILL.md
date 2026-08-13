@@ -29,6 +29,7 @@ Branch on the problem `code`, never on the wording.
 | `START_FAILED` | The command exited. The `output` field is the tail of its log; show it and read it, do not retry blindly |
 | `NOT_READY` | Still compiling after the timeout. It is still running. Say so, wait, run `curtain up` again |
 | `NOT_ANSWERING` | The port is open and the app is silent. Point the user at the `log` path |
+| `NO_ENV_VALUES` | The app needs an env file that exists nowhere on this machine. Use the `env` skill; do not start it by hand to see what happens |
 | `PORT_TAKEN` | Another checkout owns that port. Name the `owner` so the user knows which one, then let Curtain use a different port |
 | `UNCLAIMED_SERVER` | Something is listening that Curtain cannot attribute. Do not adopt it and do not kill it. Mention it once |
 
