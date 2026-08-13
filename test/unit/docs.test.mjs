@@ -32,6 +32,9 @@ const KNOWN_NON_COMMANDS = new Set(['detect', 'apply'])
 // Docs that may promise the future, and docs that may only describe the present.
 const FORWARD_LOOKING = new Set(['ROADMAP.md', 'docs/DESIGN.md', 'docs/BRAND.md'])
 
+// Screaming-snake names a doc may use that are not problem codes.
+const ENV_VARS = new Set(['CURTAIN_PLAYWRIGHT'])
+
 const operational = () => docs().filter(([f]) => !FORWARD_LOOKING.has(f))
 const forward = () => docs().filter(([f]) => FORWARD_LOOKING.has(f))
 
@@ -100,7 +103,10 @@ test('each skill has frontmatter with a name and a description', () => {
 
 test('no skill exceeds 60 lines, because mechanics belong in code', () => {
   for (const name of readdirSync(SKILLS)) {
-    const lines = readFileSync(join(SKILLS, name, 'SKILL.md'), 'utf8').split('\n').length
+    // trimEnd first: splitting a file that ends in a newline yields a trailing
+    // empty string, which counted every skill as one line longer than `wc -l`
+    // reports and made the limit silently 59.
+    const lines = readFileSync(join(SKILLS, name, 'SKILL.md'), 'utf8').trimEnd().split('\n').length
     assert.ok(lines <= 60, `skills/${name}/SKILL.md is ${lines} lines; move mechanics into the CLI`)
   }
 })
@@ -114,10 +120,12 @@ test('no user-facing doc uses an em dash', () => {
 test('every problem code a doc branches on is a real code', async () => {
   const { CODES } = await import('../../lib/problems.mjs')
   for (const [file, body] of docs()) {
-    // Every backticked screaming-snake identifier in a doc is currently a problem
-    // code. If a future doc needs to name an environment variable, this will fail
-    // and want an allowlist; leaving one here before then is dead weight.
+    // Nearly every backticked screaming-snake identifier in a doc is a problem
+    // code, and one that is not is almost always a typo. The exceptions are
+    // environment variables, which arrived with `walk`; they are listed rather
+    // than pattern-matched so that adding one is a deliberate act.
     for (const m of body.matchAll(/`(([A-Z]+_){1,3}[A-Z]+)`/g)) {
+      if (ENV_VARS.has(m[1])) continue
       assert.ok(CODES[m[1]], `${file} branches on \`${m[1]}\`, which is not a problem code`)
     }
   }
