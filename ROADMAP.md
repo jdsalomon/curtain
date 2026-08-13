@@ -11,7 +11,7 @@ An agent that can do that stops reporting and starts showing. That is the whole 
 between "I implemented it" and "here it is working" is where trust in agentic work is currently lost,
 and it is a tooling gap rather than a model one.
 
-**Status: v0.2.0 is the current release.** Everything after it is a plan, not a promise, and the
+**Status: v0.3.0 is the current release.** Everything after it is a plan, not a promise, and the
 versions are the order of work rather than dates.
 
 ## Why this exists
@@ -72,7 +72,22 @@ nobody downloads a browser to run `curtain up`.
 *You get:* the thing you paste into a pull request, which is simultaneously the thing that proves it
 works.
 
-### v0.3.0, isolated data per workspace · planned
+### v0.3.0, a fresh checkout starts itself · released
+
+Env files are gitignored, so they travel with neither a clone nor a worktree, and the
+first `curtain up` in a new checkout used to be a crash whose log blamed the app. Now the
+cause has a name and mostly fixes itself.
+
+The model is a split. The **schema** (which variables an app needs) is your committed
+`.env.example`, versioned with the branch. The **values** are one canonical file per
+project on this machine, written once at `curtain env adopt` and never overwritten, that
+every checkout reaches through a symlink `curtain up` creates on its own. A branch that
+adds a variable is caught by comparing names, and values appear in no output, ever.
+
+*You get:* the twentieth worktree starts as easily as the first, and "works on my
+checkout" stops being a sentence anyone says.
+
+### v0.4.0, isolated data per workspace · planned
 
 `curtain seed` runs **your** provisioning command and confirms it worked. Each workspace gets its own
 data, so two branches, or two agents, can work at once without overwriting each other.
@@ -86,7 +101,7 @@ counts and sizes, and deletes nothing.
 *You get:* parallel work that does not corrupt itself, and a cleanup you can trust because it shows
 its work first.
 
-### v0.4.0, one declaration, demo or test · planned
+### v0.5.0, one declaration, demo or test · planned
 
 Write the storyboard once as **scenes**, each tagged with what it covers: the happy path, an edge
 case, an error, the bug you just fixed. Then render it as a narrated video for humans or as a fast
@@ -98,7 +113,7 @@ Coverage stops being a claim in a pull request description and becomes an exit c
 *You get:* demos and tests as one artifact, and an answer to "did you test the edge cases" that is
 not a promise.
 
-### v0.5.0, it gets faster the more you use it · planned
+### v0.6.0, it gets faster the more you use it · planned
 
 `curtain actions` is a cache of the interactions you have already worked out, keyed by surface and
 action. Before writing a new one, Curtain looks for the existing one. An entry that stops matching

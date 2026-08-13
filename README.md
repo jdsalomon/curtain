@@ -20,9 +20,9 @@ drive the real app in a real browser, record what happened, tear it down.
 
 ---
 
-> **v0.2.0 records.** v0.1.0 built the somewhere: everything an agent does to your app
-> has to happen against a specific server, and getting that right is the part that
-> quietly breaks. This release drives that server and films it. Seeding is next. The
+> **v0.3.0 starts fresh checkouts.** v0.1.0 built the somewhere, v0.2.0 films it, and
+> this release fixes the reason a new clone or worktree could not boot at all: env
+> files are gitignored, so they travel with nothing. Seeded data is next. The
 > [roadmap](ROADMAP.md) marks every unreleased version as planned, on purpose.
 
 ## Try it in under a minute
@@ -132,7 +132,8 @@ this and what happens under monorepo task runners.
 | Skill | What it does |
 |---|---|
 | `/setup` | detects how your project starts, asks only what it cannot detect |
-| `/up` | starts what is missing, reuses what is healthy |
+| `/up` | starts what is missing, reuses what is healthy, links missing env files |
+| `/env` | gets a checkout its env files without ever reading a value |
 | `/walk` | drives the app in a real browser and records it |
 | `/down` | stops exactly what this workspace started |
 
@@ -144,6 +145,7 @@ curtain resolve --json    # the raw truth, for when you want to see it
 curtain up   [app...]
 curtain down [app...]
 curtain walk [name]       # no name lists them
+curtain env  [link|adopt] # bare = status; values never appear in any output
 curtain setup detect | apply
 ```
 
@@ -216,16 +218,24 @@ One committed file, `curtain.json`, holding only facts that cannot go stale:
 
 ```json
 {
+  "name": "myproject",
   "apps": {
     "admin": {
       "start": "make admin-dev",
       "ready": "Ready in",
+      "env": ["apps/admin/.env.local"],
       "fingerprint": { "path": "/login", "expect": "password" }
     },
     "guest": { "start": "make guest-dev", "ready": "Ready in" }
   }
 }
 ```
+
+`env` names the gitignored files an app needs, which is exactly what a fresh clone or
+worktree is missing. The values live once per project on your machine, in a store keyed
+by `name`; every checkout reaches them through a symlink that `curtain up` creates
+itself. The schema stays in your committed `.env.example`, so a branch that adds a
+variable is caught by name, and the values never appear in any output.
 
 **Ports and pids are never stored.** They are discovered every time, because a stored
 port is a lie waiting to happen. `curtain.local.json` is gitignored and merged over the
@@ -240,9 +250,9 @@ disposable.**
 Bring the stack up. Give it data of its own. Drive the real app. Record what happened.
 Tear it down. One command each, in a repo Curtain has never seen.
 
-Isolated data per workspace, recordings that double as tests, one declaration rendered
-as either a demo or a test suite, and a cache that makes each new recording cheaper are
-the releases after this one. See [ROADMAP.md](ROADMAP.md).
+Isolated data per workspace, one declaration rendered as either a demo or a test
+suite, and a cache that makes each new recording cheaper are the releases after this
+one. See [ROADMAP.md](ROADMAP.md).
 
 ## The rest
 

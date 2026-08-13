@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.3.0
+
+A fresh checkout starts itself. Env files are gitignored, so they travel with neither a
+clone nor a worktree; the first `curtain up` in a new checkout was a crash whose log
+blamed the app. Now the cause has a name, and when the values already exist on the
+machine, `up` repairs it without being asked.
+
+- Apps declare the env files they need: `"env": [".env.local"]` in curtain.json. Paths
+  and names only; declaring env requires a top-level project `name`, which keys the store
+- The schema/values split: `.env.example` (committed, per branch) says which variables an
+  app needs; the values live once per project in a machine-level store every checkout
+  symlinks to
+- `curtain env` reports where each declared file is; `curtain env adopt` moves a real
+  file into the store and leaves a symlink; `curtain env link` creates missing links
+- `curtain up` links missing env files itself before starting, and refuses to start an
+  app whose values exist nowhere, naming the file instead of crashing the app to find out
+- A branch that adds a variable is caught by name: the example's keys are compared with
+  the values file's keys, and the drift is reported as `ENV_KEYS_MISSING`
+- Values appear in no output, no log and no `--json`, without exception; states and key
+  names only. The store is written once per file, at adopt, and nothing can overwrite it:
+  a disagreeing checkout file is an `ENV_CONFLICT` for a human, never a merge
+- The fixture gains a `vip` role that exits unless `--env-file` hands it `VIP_CODE`, so
+  the machinery has something real to fail against
+- Curtain never injects variables into a process: the app reads its own file, Curtain
+  only makes the file exist
+
+Platforms: macOS and Linux. Windows reports `UNSUPPORTED_PLATFORM`.
+
 ## 0.2.0
 
 A recording that is also a test. `curtain walk` drives the real app in a real browser and films it,
