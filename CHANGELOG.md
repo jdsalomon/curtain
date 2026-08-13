@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.3.1
+
+Fixes from the first clean-room run: an agent that had never seen Curtain set it up on a
+real monorepo and reported the friction. Everything here is its findings.
+
+- `setup detect` now proposes the project `name` (from an unscoped package.json name, else
+  the directory), and `setup apply` refuses a config that declares env files without one,
+  before writing anything. Previously the scripted interview produced a config that broke
+  `curtain env` at first use
+- Detect notices committed `.env.example` files and proposes the gitignored siblings as
+  env declarations, so the repair machinery is discoverable at setup time instead of at
+  the first failure
+- The ready-marker question now offers what the framework dependencies imply (Next, Vite,
+  Nuxt, Astro) instead of an empty options list
+- `UNCLAIMED_SERVER` fires only for listeners running from this workspace's git root.
+  Ambient sockets (a music player, Docker, a browser) stay visible as data and as the
+  report's ambient count, but a problem that fired on every run of a busy laptop stopped
+  being read, and it disagreed with doctor's debt section about the very same listeners,
+  which already used the correct filter. The two views now share one filter, pinned by test
+- The setup skill explains `name` and the env declarations; the down skill's description
+  of doctor's debt output now matches what doctor actually prints; the `envs` prod/preview
+  key is documented in the README and the setup skill
+
+Platforms: macOS and Linux. Windows reports `UNSUPPORTED_PLATFORM`.
+
 ## 0.3.0
 
 A fresh checkout starts itself. Env files are gitignored, so they travel with neither a

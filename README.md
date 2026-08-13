@@ -227,7 +227,8 @@ One committed file, `curtain.json`, holding only facts that cannot go stale:
       "fingerprint": { "path": "/login", "expect": "password" }
     },
     "guest": { "start": "make guest-dev", "ready": "Ready in" }
-  }
+  },
+  "envs": { "prod": "myproject.com" }
 }
 ```
 
@@ -236,6 +237,10 @@ worktree is missing. The values live once per project on your machine, in a stor
 by `name`; every checkout reaches them through a symlink that `curtain up` creates
 itself. The schema stays in your committed `.env.example`, so a branch that adds a
 variable is caught by name, and the values never appear in any output.
+
+`envs` declares your deployed hostnames so a recording can refuse them: a walk
+mutates data, an unknown host classifies as prod, and only `--force` gets past
+the refusal.
 
 **Ports and pids are never stored.** They are discovered every time, because a stored
 port is a lie waiting to happen. `curtain.local.json` is gitignored and merged over the

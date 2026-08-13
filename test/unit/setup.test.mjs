@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, rmSync, writeFileSync, readFileSync, realpathSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, realpathSync, existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
@@ -109,5 +109,60 @@ test('apply rejects a config with no start command, since it could never work', 
       () => applyConfig({ root: dir, config: { apps: { admin: { ready: 'Ready in' } } } }),
       /start/,
     )
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('detect proposes a project name, from package.json or the directory', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'curtain-setup-'))
+  try {
+    writeFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'myproj', scripts: { dev: 'x' } }))
+    const d = detectCandidates({ root: dir })
+    assert.equal(d.name, 'myproj')
+    const q = d.questions.find((x) => x.key === 'name')
+    assert.deepEqual(q.options, ['myproj'])
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('a scoped package name falls back to the directory, which every checkout shares less', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'curtain-setup-'))
+  try {
+    writeFileSync(join(dir, 'package.json'), JSON.stringify({ name: '@org/thing' }))
+    const d = detectCandidates({ root: dir })
+    assert.ok(!d.name.startsWith('@'), 'a scope prefix makes an ugly store directory')
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('a committed .env.example implies the env file to declare', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'curtain-setup-'))
+  try {
+    mkdirSync(join(dir, 'apps', 'web'), { recursive: true })
+    writeFileSync(join(dir, 'apps', 'web', 'package.json'), '{}')
+    writeFileSync(join(dir, 'apps', 'web', '.env.example'), 'KEY=\n')
+    const d = detectCandidates({ root: dir })
+    assert.deepEqual(d.envExamples, [{ example: 'apps/web/.env.example', declare: 'apps/web/.env.local' }])
+    assert.ok(d.questions.some((q) => q.key === 'env'))
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('the ready question offers the marker the framework dependency implies', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'curtain-setup-'))
+  try {
+    mkdirSync(join(dir, 'apps', 'web'), { recursive: true })
+    writeFileSync(join(dir, 'apps', 'web', 'package.json'),
+      JSON.stringify({ dependencies: { next: '^14' } }))
+    const d = detectCandidates({ root: dir })
+    const q = d.questions.find((x) => x.key === 'ready')
+    assert.deepEqual(q.options, ['Ready in'])
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('apply refuses env declarations without a name, before anything is written', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'curtain-setup-'))
+  try {
+    assert.throws(
+      () => applyConfig({ root: dir, config: { apps: { a: { start: 'x', env: ['.env.local'] } } } }),
+      /needs a top-level "name"/,
+    )
+    assert.ok(!existsSync(join(dir, 'curtain.json')), 'nothing may be written on refusal')
   } finally { rmSync(dir, { recursive: true, force: true }) }
 })

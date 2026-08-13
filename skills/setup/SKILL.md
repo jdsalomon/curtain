@@ -18,7 +18,14 @@ found, any monorepo app directories, and a `questions` list.
 ## 2. Ask
 
 Ask the user the questions, in your own words, in one message. Keep it short: at
-most one round of questions. What matters is a name and a start command per app.
+most one round of questions. What matters is the project `name`, a start command
+per app, and which env files to declare.
+
+The `name` is not decoration: it keys the machine-level env-values store, so
+`apply` refuses a config that declares env files without one. Detect proposes
+one; confirm it rather than inventing another. When detect lists env files
+implied by committed examples, declare them: that is what lets `curtain up`
+repair a fresh clone or worktree by itself.
 
 If a candidate is obvious, say what you are assuming instead of asking. A repo
 with `make admin-dev` and `make guest-dev` needs no interview, only confirmation.
@@ -39,6 +46,10 @@ timeout.
 That writes `curtain.json` and adds `.curtain/` to `.gitignore`. Then run
 `curtain doctor` to confirm, and tell the user to commit `curtain.json` so their
 teammates and every future worktree inherit it.
+
+If the project has a deployed hostname, add `"envs": { "prod": "example.com" }`:
+recording refuses any target that does not classify as local, and an unknown
+host counts as prod, so this only needs declaring to *allow* a preview host.
 
 ## What not to do
 

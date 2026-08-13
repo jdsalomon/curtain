@@ -98,7 +98,10 @@ test('a foreign listener is listed with its owner and never adopted', async () =
   } finally { rmSync(dir, { recursive: true, force: true }) }
 })
 
-test('an unclaimed listener is reported with the fingerprint suggestion', async () => {
+test('an ambient listener stays data and raises no problem', async () => {
+  // A busy laptop has dozens of these (a music player, Docker, a browser).
+  // A problem that fires on every run stops being read, and doctor's debt,
+  // which filters to this workspace, would disagree with it.
   const dir = repo(CONFIG)
   try {
     const r = await resolve({
@@ -108,7 +111,23 @@ test('an unclaimed listener is reported with the fingerprint suggestion', async 
         listeners: () => ({ items: [{ pid: 8123, command: 'Python', port: 3055, kind: 'unclaimed' }], problems: [] }),
       },
     })
-    assert.equal(r.unclaimed.length, 1)
+    assert.equal(r.unclaimed.length, 1, 'still visible as data')
+    assert.ok(!r.problems.some((x) => x.code === 'UNCLAIMED_SERVER'),
+      'someone else\'s process is not this workspace\'s problem')
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('an unclaimed listener from THIS workspace is a problem with the fingerprint fix', async () => {
+  const dir = repo(CONFIG)
+  try {
+    const r = await resolve({
+      cwd: dir,
+      io: {
+        git: git(dir),
+        listeners: () => ({ items: [{ pid: 8123, command: 'node', port: 3055, kind: 'mine' }], problems: [] }),
+        matchFingerprint: async () => false,
+      },
+    })
     const p = r.problems.find((x) => x.code === 'UNCLAIMED_SERVER')
     assert.equal(p.port, 3055)
     assert.match(p.fix, /fingerprint/)
