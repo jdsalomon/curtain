@@ -2,6 +2,7 @@
 // Roles: admin (login form + items), guest (items), quiet (announces nothing).
 import { createServer } from 'node:http'
 import { readFileSync, writeFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 
 const ROLE = process.argv[2] ?? 'admin'
 if (!['admin', 'guest', 'quiet', 'vip'].includes(ROLE)) {
@@ -19,7 +20,14 @@ if (ROLE === 'vip' && !process.env.VIP_CODE) {
 
 // Items live in a file, not in memory, because real data outlives the process
 // that serves it: that is what makes it seedable before the app is even up.
-const STORE = new URL('./items.json', import.meta.url)
+//
+// FIXTURE_STORE points it elsewhere, the way a real app takes a database URL.
+// The tests use it so concurrent runs cannot share one file: `node --test` runs
+// test files in parallel, and a shared mutable store made them clobber each
+// other in a way that only appeared in the full suite.
+const STORE = process.env.FIXTURE_STORE
+  ? process.env.FIXTURE_STORE
+  : fileURLToPath(new URL('./items.json', import.meta.url))
 const readItems = () => {
   try { return JSON.parse(readFileSync(STORE, 'utf8')) } catch { return [] }
 }

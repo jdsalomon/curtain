@@ -7,6 +7,7 @@
 //     node provision.mjs 3     put three items in the store
 //     node provision.mjs 0     empty it
 import { writeFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 
 const count = Number(process.argv[2] ?? 0)
 if (!Number.isInteger(count) || count < 0) {
@@ -15,5 +16,8 @@ if (!Number.isInteger(count) || count < 0) {
 }
 
 const items = Array.from({ length: count }, (_, i) => ({ label: `item ${i + 1}` }))
-writeFileSync(new URL('./items.json', import.meta.url), JSON.stringify(items))
+const store = process.env.FIXTURE_STORE
+  ? process.env.FIXTURE_STORE
+  : fileURLToPath(new URL('./items.json', import.meta.url))
+writeFileSync(store, JSON.stringify(items))
 console.log(`provisioned ${count} item(s)`)

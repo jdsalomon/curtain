@@ -3,12 +3,18 @@ import assert from 'node:assert/strict'
 import { spawn } from 'node:child_process'
 import { join } from 'node:path'
 import { once } from 'node:events'
+import { tmpdir } from 'node:os'
 
 const FIXTURE = join(import.meta.dirname, '..', '..', 'fixture')
 
+/** A private items file per app instance: test files run in parallel, and a
+ *  shared store made them overwrite each other's data. */
+let storeSeq = 0
+const store = () => join(tmpdir(), `curtain-items-${process.pid}-${storeSeq++}.json`)
+
 /** Start a fixture role, resolve once it announces, always kill it. */
 async function withApp(role, fn) {
-  const child = spawn(process.execPath, ['app.mjs', role], { cwd: FIXTURE })
+  const child = spawn(process.execPath, ['app.mjs', role], { cwd: FIXTURE, env: { ...process.env, FIXTURE_STORE: store() } })
   let out = ''
   const announced = new Promise((resolve, reject) => {
     child.stdout.on('data', (d) => {

@@ -19,6 +19,11 @@ import { loadChromium, chromiumInstalled } from '../../lib/browser.mjs'
 
 const FIXTURE = join(import.meta.dirname, '..', '..', 'fixture')
 
+/** A private items file per app instance: test files run in parallel, and a
+ *  shared store made them overwrite each other's data. */
+let storeSeq = 0
+const store = () => join(tmpdir(), `curtain-items-${process.pid}-${storeSeq++}.json`)
+
 /**
  * Why this file cannot run here, or `false` when it can.
  *
@@ -45,7 +50,7 @@ async function stagedRepo(walks, fn) {
   }
   execFileSync('git', ['init', '-q'], { cwd: dir })
 
-  const child = spawn(process.execPath, ['app.mjs', 'admin'], { cwd: FIXTURE })
+  const child = spawn(process.execPath, ['app.mjs', 'admin'], { cwd: FIXTURE, env: { ...process.env, FIXTURE_STORE: store() } })
   let out = ''
   const live = await new Promise((resolve, reject) => {
     child.stdout.on('data', (d) => {

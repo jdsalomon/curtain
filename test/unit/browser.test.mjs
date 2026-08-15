@@ -44,7 +44,10 @@ test('no install anywhere is a problem with a fix, never a throw', async () => {
     const r = await loadChromium({ candidates: [empty] })
     assert.equal(r.chromium, undefined)
     assert.equal(r.problem.code, 'MISSING_CHROMIUM')
-    assert.match(r.problem.fix, /playwright install chromium/)
+    // The fix must offer the path that costs the project nothing, first: adding
+    // a browser to the repo's own manifest is a dependency review question.
+    assert.match(r.problem.fix, /curtain setup browser/)
+    assert.match(r.problem.fix, /\.cache/, 'and name the shared cache it will use')
     assert.deepEqual(r.problem.searched, [empty], 'the failure says where it looked')
   } finally { rmSync(empty, { recursive: true, force: true }) }
 })

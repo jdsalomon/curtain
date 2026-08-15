@@ -1,6 +1,6 @@
 {
   "name": "curtain",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Let your agents show you what they built: bring the stack up, drive the real app, record what happened, tear it down.",
   "type": "module",
   "private": true,

@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.5.1
+
+Fixes from a second clean-room run, this time on a real monorepo: an agent with no prior knowledge of
+either was given the repository and Curtain's skills and asked to set it up from nothing. It
+succeeded, and everything here is what it hit on the way.
+
+- **`curtain setup browser`** now exists. It installs a shared Playwright and Chromium under
+  `~/.cache/curtain/browser`, which every checkout reuses and no project manifest records. Previously
+  `MISSING_CHROMIUM` offered only two bad options, adding a browser to the project's own dependencies
+  or pointing an environment variable at an install you had to already know about. The third path was
+  searched but never mentioned, nothing populated it, and a source comment named this command a
+  release before it was written. The agent escaped only by reading that source
+- Navigation and element lookups no longer share one timeout. Finding an element still waits 10s,
+  because a missing button is missing now; navigating waits 60s, because a dev server compiles a
+  route the first time it is asked for. One shared value meant either failures crawled or first
+  navigations flaked, and a cold Next route hit exactly that. Both are overridable per walk
+  (`meta.timeout`, `meta.navigationTimeout`) and both are now documented, which the existing
+  `meta.timeout` never was
+- The walk skill mentions `.filter({ visible: true })`, since a responsive layout that renders the
+  same text twice will otherwise hang a locator for the full timeout
+- The seed skill says that idempotent is not the same as restoring: a walk that persists a selection
+  changes what the next run sees, and the seed has to reset that too
+- The fixture's item store is per instance (`FIXTURE_STORE`), the way a real app takes a database
+  URL. Test files run in parallel, so the file-backed store added in 0.4.0 let concurrent tests
+  overwrite each other, which showed up only in the full suite and only sometimes
+
+Platforms: macOS and Linux. Windows reports `UNSUPPORTED_PLATFORM`.
+
 ## 0.5.0
 
 Delete what you are done with, and nothing you might still want. `curtain cleanup` invoked bare is a

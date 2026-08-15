@@ -45,6 +45,10 @@ export default async ({ page, url, tenant }) => page.goto(url(`/${tenant.slug}`)
 Curtain runs the seed before recording, every time, so **seeds must be
 idempotent**. Never hardcode in a walk what a seed invented; read `tenant`.
 
+Idempotent is not the same as restoring. If a walk changes state the next run
+depends on (a selection it persists, a flag it flips), the seed has to reset that
+too, or the second recording quietly differs from the first.
+
 | Code | What to do |
 |---|---|
 | `SEED_FAILED` | The command failed. `message` carries its output; read it, do not retry blindly |

@@ -151,7 +151,7 @@ curtain seed [name]       # no name lists them
 curtain walk [name]       # no name lists them
 curtain cleanup [--yes]   # bare is a dry run that deletes nothing
 curtain env  [link|adopt] # bare = status; values never appear in any output
-curtain setup detect | apply
+curtain setup detect | apply | browser
 ```
 
 Every command takes `--json`. Failures are values with stable codes and a `fix` line,

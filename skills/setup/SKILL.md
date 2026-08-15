@@ -21,18 +21,16 @@ Ask the user the questions, in your own words, in one message. Keep it short: at
 most one round of questions. What matters is the project `name`, a start command
 per app, and which env files to declare.
 
-The `name` is not decoration: it keys the machine-level env-values store, so
-`apply` refuses a config that declares env files without one. Detect proposes
-one; confirm it rather than inventing another. When detect lists env files
-implied by committed examples, declare them: that is what lets `curtain up`
-repair a fresh clone or worktree by itself.
+The `name` keys the machine-level env-values store, so `apply` refuses a config
+declaring env files without one. Detect proposes one; confirm rather than invent.
+Declare the env files detect infers from committed examples: that is what lets
+`curtain up` repair a fresh clone or worktree by itself.
 
 If a candidate is obvious, say what you are assuming instead of asking. A repo
 with `make admin-dev` and `make guest-dev` needs no interview, only confirmation.
 
-Detection is deliberately generous: it offers anything dev-shaped, so a
-production-preview target can appear next to the real dev server. Pick, do not
-paste the whole list.
+Detection is generous on purpose: a production-preview target can appear next to
+the real dev server. Pick, do not paste the whole list.
 
 The `ready` marker is optional. Ask for the line the app prints when it is
 serving, and if the user does not know, leave it out: Curtain polls the URL
@@ -46,6 +44,10 @@ timeout.
 That writes `curtain.json` and adds `.curtain/` to `.gitignore`. Then run
 `curtain doctor` to confirm, and tell the user to commit `curtain.json` so their
 teammates and every future worktree inherit it.
+
+Recording needs a browser: `curtain setup browser` installs a shared Playwright
+and Chromium under your cache, reused by every checkout. Never add a browser to
+the project's own dependencies to make a recording work.
 
 If the project has a deployed hostname, add `"envs": { "prod": "example.com" }`:
 recording refuses any target that does not classify as local, and an unknown
