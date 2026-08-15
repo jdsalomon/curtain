@@ -11,7 +11,7 @@ An agent that can do that stops reporting and starts showing. That is the whole 
 between "I implemented it" and "here it is working" is where trust in agentic work is currently lost,
 and it is a tooling gap rather than a model one.
 
-**Status: v0.4.0 is the current release.** Everything after it is a plan, not a promise, and the
+**Status: v0.5.0 is the current release.** Everything after it is a plan, not a promise, and the
 versions are the order of work rather than dates.
 
 ## Why this exists
@@ -104,11 +104,21 @@ no options mechanism, deliberately.
 *You get:* parallel work that does not corrupt itself, and walks that declare the data they need
 instead of assuming it.
 
-### v0.5.0, delete what you are done with · planned
+### v0.5.0, delete what you are done with · released
 
-`curtain cleanup`, which invoked bare is a dry run: it shows you what it would delete, with counts
-and sizes, and deletes nothing. It runs the host's own teardown, the mirror of `seed`, and never
-reaches the shared infrastructure underneath it: stopping a server is not deleting a database.
+`curtain cleanup` invoked bare is a dry run: counts, sizes, and nothing deleted. `--yes` is the only
+way anything goes.
+
+The dry run never calls a host teardown, not even to ask what it would do, because a script that
+ignored a `dryRun` flag would delete for real and the safety of the preview would rest on someone
+else's care. So Curtain measures exactly what it owns and only *names* the teardowns it would
+invoke. Being honest about that boundary beats a preview that might be lying.
+
+Your data is undone by your own script: a seed that exports `cleanup` can undo itself, beside the
+half that made it, so the two cannot drift. A seed is a candidate only when this workspace recorded
+running it, so cleanup cannot reach another checkout's rows, and a failed teardown keeps its record
+rather than silently forgetting the data. Nothing here touches the runfile or any shared service:
+stopping a server is not deleting a database.
 
 *You get:* a cleanup you can trust, because it shows its work first.
 

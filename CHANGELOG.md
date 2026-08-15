@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.5.0
+
+Delete what you are done with, and nothing you might still want. `curtain cleanup` invoked bare is a
+dry run: counts, sizes, and nothing removed.
+
+- `curtain cleanup` measures Curtain's own artifacts (recordings, logs) exactly, because Curtain
+  made them, and lists the seeds that could undo themselves. `--yes` is the only way anything goes
+- **The dry run never calls a host teardown**, not even to preview it. A script that ignored a
+  `dryRun` flag would delete for real, and the safety of a preview must not rest on someone else's
+  care, so teardowns are named rather than inspected
+- A seed undoes itself by exporting `cleanup`, beside the half that made the data, so provisioning
+  and teardown cannot drift apart. A seed with no `cleanup` is simply not listed, which is honest:
+  it made data it cannot unmake
+- A seed is a candidate only when this workspace recorded running it, so cleanup cannot reach
+  another checkout's data
+- A failed teardown keeps its record and raises `CLEANUP_FAILED` rather than forgetting the data
+- Data is undone before artifacts are deleted, so a teardown that fails has not already cost you the
+  recording that shows what happened
+- Nothing here touches the runfile, so `curtain down` can still stop what is running, and nothing
+  touches a shared service, database or container: those belong to every checkout, not to this one
+- The `down` skill now hands off to `cleanup` for what has piled up, instead of describing a debt
+  section that only ever covered listeners
+
+Platforms: macOS and Linux. Windows reports `UNSUPPORTED_PLATFORM`.
+
 ## 0.4.0
 
 Isolated data per workspace. `curtain seed` runs the provisioning script you already have and
