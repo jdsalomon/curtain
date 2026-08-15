@@ -20,9 +20,10 @@ plainly with the pid, because that needs a human.
 
 ## After stopping
 
-`down` removes nothing from disk, on purpose. Run `curtain doctor`: when this
-workspace has accumulated debt (today that means listeners of its own that no
-app claims) a `debt` section appears with a suggestion per entry; surface it.
-No section means no debt, which is the usual case. Do not clean anything up
-for the user: what lingers is exactly the kind of thing someone was about to
-use.
+`down` removes nothing from disk, on purpose. Run `curtain cleanup` to show what
+has piled up (recordings, logs, seeded data) with sizes, and surface that list.
+It deletes nothing; the user decides. `curtain doctor` additionally reports a
+`debt` section when this workspace has listeners of its own that no app claims.
+
+Never clean up on the user's behalf: what lingers is exactly the kind of thing
+someone was about to use.
