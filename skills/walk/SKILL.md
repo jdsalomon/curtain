@@ -11,17 +11,17 @@ name into wherever the app is listening right now.
 
 ## Plan the shot list before writing anything
 
-A demo is not one lucky click-through. Decide the scenes first, three to six of
-them: the happy path, the empty state, the boundary, and the thing you just
-fixed. Then write the walk to that list, in one continuous order.
+A demo is not one lucky click-through. Decide the scenes first, three to six:
+the happy path, the empty state, the boundary, and the thing you just fixed.
+Then write the walk to that list, in one continuous order.
 
 ## Writing a walk
 
-Create `curtain/walks/<name>.mjs`. It exports a default async function and gets a
-toolkit; it never imports Playwright and never names a port.
+Create `curtain/walks/<name>.mjs`: a default async function given a toolkit. It
+never imports Playwright and never names a port.
 
 ```js
-export const meta = { target: 'admin', viewport: 'phone' }   // phone | tablet | desktop
+export const meta = { target: 'admin', viewport: 'phone', seed: 'empty' }
 
 export default async function ({ page, url, click, point, type, sleep, log }) {
   await page.goto(url('/login'))
@@ -37,8 +37,9 @@ export async function cleanup({ request, url }) {   // runs even if the walk thr
 ```
 
 `click` and `point` glide a visible cursor and ripple; `point` does not activate,
-for things you must show but not press. Locate by role, label or test id, never by
-visible copy, so a walk survives a restyle and a translation.
+for what you must show but not press. Locate by role, label or test id, never by
+visible copy, so a walk survives a restyle. `viewport` is phone, tablet or
+desktop; `seed` runs first and hands you its facts as `tenant`.
 
 ## The artifact rule
 
@@ -53,8 +54,7 @@ the frames before the failure usually explain it. Check the exit code.
 | `MISSING_CHROMIUM` | No Playwright found. Show the `fix` line, do not install unasked |
 | `MISSING_FFMPEG` | The webm is fine, there is just no mp4 or gif. Mention once |
 | `TARGET_NOT_LOCAL` | Refused: a walk mutates data. Never pass `--force` on the user's behalf |
+| `SEED_FAILED` | The data this walk needs was not made. Use the `seed` skill |
 
-## After recording
-
-Print the absolute path, say in one line what the clip shows, and stop. Posting
-it to a pull request is outward-facing, so never publish unprompted.
+Afterwards, print the absolute path, say in one line what the clip shows, and
+stop. Posting it to a pull request is outward-facing: never publish unprompted.
