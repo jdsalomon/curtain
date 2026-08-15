@@ -11,6 +11,9 @@
 export const meta = {
   target: 'admin',
   viewport: 'phone',
+  // The walk used to assume the list happened to be empty. Now it says so, and
+  // Curtain guarantees it before recording.
+  seed: 'empty',
 }
 
 export default async function addAnItem({ page, url, click, type, sleep, log }) {

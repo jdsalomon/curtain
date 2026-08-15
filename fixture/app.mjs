@@ -1,6 +1,7 @@
 // A dependency-free two-role app, so the harness has something real to resolve.
 // Roles: admin (login form + items), guest (items), quiet (announces nothing).
 import { createServer } from 'node:http'
+import { readFileSync, writeFileSync } from 'node:fs'
 
 const ROLE = process.argv[2] ?? 'admin'
 if (!['admin', 'guest', 'quiet', 'vip'].includes(ROLE)) {
@@ -16,7 +17,13 @@ if (ROLE === 'vip' && !process.env.VIP_CODE) {
   process.exit(1)
 }
 
-let items = []
+// Items live in a file, not in memory, because real data outlives the process
+// that serves it: that is what makes it seedable before the app is even up.
+const STORE = new URL('./items.json', import.meta.url)
+const readItems = () => {
+  try { return JSON.parse(readFileSync(STORE, 'utf8')) } catch { return [] }
+}
+const writeItems = (items) => writeFileSync(STORE, JSON.stringify(items))
 
 // The fixture is what the README's recording shows, so it is dressed like a real
 // product rather than a test harness. Two rules shape the palette:
@@ -88,16 +95,18 @@ const server = createServer(async (req, res) => {
   }
 
   if (url.pathname === '/items') {
-    if (req.method === 'GET') return send(200, JSON.stringify(items), 'application/json')
+    if (req.method === 'GET') return send(200, JSON.stringify(readItems()), 'application/json')
     if (req.method === 'POST') {
       const chunks = []
       for await (const c of req) chunks.push(c)
       const body = Buffer.concat(chunks).toString() || '{}'
+      const items = readItems()
       items.push(JSON.parse(body))
+      writeItems(items)
       return send(201, JSON.stringify(items.at(-1)), 'application/json')
     }
     if (req.method === 'DELETE') {
-      items = []
+      writeItems([])
       res.writeHead(204)
       return res.end()
     }
@@ -109,7 +118,7 @@ const server = createServer(async (req, res) => {
       <p class="badge">curtain fixture</p>
       <h1>${ROLE}</h1>
       <div class="panel">
-        <div class="card" id="card">${items.length} item(s)</div>
+        <div class="card" id="card">${readItems().length} item(s)</div>
         <button id="add">Add an item</button>
         <p class="hint">Writes to this server, and turns green once it lands.</p>
       </div>
