@@ -11,7 +11,7 @@ An agent that can do that stops reporting and starts showing. That is the whole 
 between "I implemented it" and "here it is working" is where trust in agentic work is currently lost,
 and it is a tooling gap rather than a model one.
 
-**Status: v0.3.0 is the current release.** Everything after it is a plan, not a promise, and the
+**Status: v0.4.0 is the current release.** Everything after it is a plan, not a promise, and the
 versions are the order of work rather than dates.
 
 ## Why this exists
@@ -87,21 +87,32 @@ adds a variable is caught by comparing names, and values appear in no output, ev
 *You get:* the twentieth worktree starts as easily as the first, and "works on my
 checkout" stops being a sentence anyone says.
 
-### v0.4.0, isolated data per workspace · planned
+### v0.4.0, isolated data per workspace · released
 
-`curtain seed` runs **your** provisioning command and confirms it worked. Each workspace gets its own
-data, so two branches, or two agents, can work at once without overwriting each other.
+`curtain seed` runs **your** provisioning script and remembers what it made. Each workspace gets its
+own data, so two branches, or two agents, can work at once without overwriting each other.
 
 Curtain never touches your database. It cannot know what your data means, so the host owns the
-provisioning and Curtain owns the guarantee that it ran and that the result is discoverable.
+provisioning and Curtain owns the guarantee that it ran and that the result is discoverable: whatever
+a seed returns becomes `tenant` in a walk, which is how a recording stops hardcoding a slug the seed
+invented.
 
-Plus `curtain cleanup`, which invoked bare is a dry run: it shows you what it would delete, with
-counts and sizes, and deletes nothing.
+A state is a file, and a new state is a new file: adding `empty.mjs` beside `full.mjs` cannot break
+`full.mjs`, whereas adding a branch to one parameterised script can break every state in it. There is
+no options mechanism, deliberately.
 
-*You get:* parallel work that does not corrupt itself, and a cleanup you can trust because it shows
-its work first.
+*You get:* parallel work that does not corrupt itself, and walks that declare the data they need
+instead of assuming it.
 
-### v0.5.0, one declaration, demo or test · planned
+### v0.5.0, delete what you are done with · planned
+
+`curtain cleanup`, which invoked bare is a dry run: it shows you what it would delete, with counts
+and sizes, and deletes nothing. It runs the host's own teardown, the mirror of `seed`, and never
+reaches the shared infrastructure underneath it: stopping a server is not deleting a database.
+
+*You get:* a cleanup you can trust, because it shows its work first.
+
+### v0.6.0, one declaration, demo or test · planned
 
 Write the storyboard once as **scenes**, each tagged with what it covers: the happy path, an edge
 case, an error, the bug you just fixed. Then render it as a narrated video for humans or as a fast
@@ -113,7 +124,7 @@ Coverage stops being a claim in a pull request description and becomes an exit c
 *You get:* demos and tests as one artifact, and an answer to "did you test the edge cases" that is
 not a promise.
 
-### v0.6.0, it gets faster the more you use it · planned
+### v0.7.0, it gets faster the more you use it · planned
 
 `curtain actions` is a cache of the interactions you have already worked out, keyed by surface and
 action. Before writing a new one, Curtain looks for the existing one. An entry that stops matching

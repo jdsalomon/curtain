@@ -134,3 +134,28 @@ test('the refusal is what --force is for, so forcing gets past it', async () => 
     assert.ok(!r.problems.some((p) => p.code === 'TARGET_NOT_LOCAL'))
   } finally { rmSync(dir, { recursive: true, force: true }) }
 })
+
+test('a walk that declares a seed fails before the browser when the seed fails', async () => {
+  // The order matters: a broken seed must not produce a recording of the wrong
+  // data. Chromium is never reached here, which is why this runs without one.
+  const dir = repo({ w: 'export const meta = { target: "admin", seed: "bad" }\nexport default async () => {}' })
+  try {
+    mkdirSync(join(dir, 'curtain', 'seeds'), { recursive: true })
+    writeFileSync(join(dir, 'curtain', 'seeds', 'bad.mjs'),
+      'export default async ({ run }) => run("definitely-not-a-command")')
+    claim(dir, 'http://localhost:4000', 4000)
+    const r = await run(dir, 'w', { io: liveAt(dir, 'http://localhost:4000') })
+    assert.equal(r.passed, false)
+    assert.equal(r.problems.at(-1).code, 'SEED_FAILED')
+    assert.equal(r.artifacts, null, 'no artifact directory is even created')
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('a walk that names a seed which does not exist says so', async () => {
+  const dir = repo({ w: 'export const meta = { target: "admin", seed: "ghost" }\nexport default async () => {}' })
+  try {
+    claim(dir, 'http://localhost:4000', 4000)
+    const r = await run(dir, 'w', { io: liveAt(dir, 'http://localhost:4000') })
+    assert.equal(r.problems.at(-1).code, 'NO_SUCH_SEED')
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})

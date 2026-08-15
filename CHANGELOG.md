@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.4.0
+
+Isolated data per workspace. `curtain seed` runs the provisioning script you already have and
+remembers what it made, so a walk can stop assuming the data it needs happens to be there.
+
+- `curtain seed <name>` runs `curtain/seeds/<name>.mjs`; `curtain seed` lists them. A seed is
+  shaped exactly like a walk, so there is one thing to learn rather than two
+- The smallest useful seed is one line. Returning an object makes those facts reachable from a
+  walk as `tenant`, which is how a recording stops hardcoding a slug the seed invented
+- A walk declares `seed: 'name'` in its meta; Curtain runs it before recording, every time, and
+  fails the walk there rather than filming the wrong data. Seeds are idempotent by contract
+- A new state is a new file. Adding `empty.mjs` beside `full.mjs` cannot break `full.mjs`, whereas
+  adding a branch to one parameterised script can break every state in it, so there is no options
+  mechanism. Underscored files are shared helpers and stay off the menu
+- `SEED_FAILED` carries the failed command's own output; `NO_SUCH_SEED` names the seeds that exist
+- Curtain still never touches your database: it runs your command in the directory holding
+  curtain.json and stores what you return. Nothing here knows what any of it means
+- The fixture's items moved from process memory to a file, because real data outlives the process
+  that serves it, and that is what makes it seedable before the app is up. It gained
+  `provision.mjs` (a stand-in for a project's own provisioning command) and two seeds
+- The fixture's walk now declares `seed: 'empty'` instead of assuming an empty list, which is the
+  whole feature demonstrated on itself
+
+Platforms: macOS and Linux. Windows reports `UNSUPPORTED_PLATFORM`.
+
 ## 0.3.1
 
 Fixes from the first clean-room run: an agent that had never seen Curtain set it up on a

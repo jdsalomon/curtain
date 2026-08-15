@@ -20,9 +20,10 @@ drive the real app in a real browser, record what happened, tear it down.
 
 ---
 
-> **v0.3.0 starts fresh checkouts.** v0.1.0 built the somewhere, v0.2.0 films it, and
-> this release fixes the reason a new clone or worktree could not boot at all: env
-> files are gitignored, so they travel with nothing. Seeded data is next. The
+> **v0.4.0 seeds.** v0.1.0 built the somewhere, v0.2.0 films it, and
+> v0.3.0 fixed the reason a new clone or worktree could not boot at all, and this
+> one gives it data of its own by running the provisioning script you already
+> have. Demos and tests as one declaration are next. The
 > [roadmap](ROADMAP.md) marks every unreleased version as planned, on purpose.
 
 ## Try it in under a minute
@@ -134,6 +135,7 @@ this and what happens under monorepo task runners.
 | `/setup` | detects how your project starts, asks only what it cannot detect |
 | `/up` | starts what is missing, reuses what is healthy, links missing env files |
 | `/env` | gets a checkout its env files without ever reading a value |
+| `/seed` | gives this workspace data of its own, from your provisioning script |
 | `/walk` | drives the app in a real browser and records it |
 | `/down` | stops exactly what this workspace started |
 
@@ -144,6 +146,7 @@ curtain doctor            # can this phase run, and what debt has piled up
 curtain resolve --json    # the raw truth, for when you want to see it
 curtain up   [app...]
 curtain down [app...]
+curtain seed [name]       # no name lists them
 curtain walk [name]       # no name lists them
 curtain env  [link|adopt] # bare = status; values never appear in any output
 curtain setup detect | apply
