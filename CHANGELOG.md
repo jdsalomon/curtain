@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.5.2
+
+Found by pointing an agent at a project that had just migrated to Curtain and asking it to build
+something visible in the app and record proof. It succeeded, and these are what it hit on the way.
+
+- **A fingerprint is now a health check, not only an identity check.** `probe` accepts any HTTP
+  status on purpose, because a healthy app's root often redirects or 404s. The cost was that a dev
+  server with a broken build answered 500 to everything and passed as live: `curtain up` said
+  `started`, and a walk filmed the broken app before timing out inside it. An app that declares a
+  `fingerprint` has already stated what it must serve, so that statement is now checked against this
+  workspace's own server, not only against strangers on other ports. A mismatch is `UNHEALTHY`, it
+  blocks, and its `fix` names the likeliest cause: a checkout that has never had its dependencies
+  installed or its workspace packages built. A walk refuses to record against it rather than
+  producing a video that blames the feature. The service stays claimed, deliberately, so `up` cannot
+  start a second copy on a port already held.
+
+- **`envStore` in curtain.json points at a values store you already have.** Curtain assumed the store
+  was always its own (`~/.config/curtain/<name>/`), so a project that had kept its env values in one
+  place for years was told they existed nowhere and invited to adopt, which would have copied live
+  credentials into a rival store with two files to keep in step forever after. Paths inside the store
+  mirror the checkout either way, so an existing store laid out that way needs no migration, and
+  `envStore` replaces `name` as the thing that keys it.
+
+- **Two traps that cost an agent real time are now written down.** `curtain doctor | tail` reports the
+  pipe's exit status and not Curtain's, so a blocked run reads as a clean one; the `up` skill now says
+  to read the code from Curtain directly, or use `--json` when the output is long. And artifacts are
+  keyed by walk name, so a later failing run deletes the mp4 an earlier pass left: that is the
+  artifact rule working, but nothing said so.
+
 ## 0.5.1
 
 Fixes from a second clean-room run, this time on a real monorepo: an agent with no prior knowledge of

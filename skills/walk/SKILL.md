@@ -35,20 +35,22 @@ export async function cleanup({ request, url }) { await request.delete(url('/ite
 you must show but not press. Locate by role, label or test id, not visible copy,
 and add `.filter({ visible: true })` when a responsive layout renders the same
 text twice. `viewport` is phone, tablet or desktop; `seed` runs first and hands
-you its facts as `tenant`. Finding an element waits 10s (`timeout`), navigating
-waits 60s (`navigationTimeout`): a route compiling for the first time is slow in
-a way a missing button never is.
+you its facts as `tenant`. Elements wait 10s (`timeout`), navigation 60s
+(`navigationTimeout`): a first compile is slow in a way a missing button is not.
 
 ## The artifact rule
 
 An mp4 exists only for a run that passed; a failed run keeps its webm, since the
-frames before a failure usually explain it. Check the exit code.
+frames before a failure usually explain it. Artifacts are keyed by walk name, so a
+later failure deletes an earlier pass's mp4: it is always the last run's verdict,
+never an archive. Copy one aside to keep it. Check the exit code.
 
 | Code | What to do |
 |---|---|
 | `WALK_FAILED` | A step threw. `message` says which; the webm shows the state it reached |
 | `CLEANUP_FAILED` | Data was left behind. Say so plainly, it needs a human |
 | `NOT_RUNNING` | The app this walk targets is down. Run `curtain up <app>` |
+| `UNHEALTHY` | It is up and serving the wrong thing, so nothing was filmed. Fix the app, do not re-run |
 | `MISSING_CHROMIUM` | No Playwright found. Show the `fix` line, do not install unasked |
 | `MISSING_FFMPEG` | The webm is fine, there is just no mp4 or gif. Mention once |
 | `TARGET_NOT_LOCAL` | Refused: a walk mutates data. Never pass `--force` on the user's behalf |

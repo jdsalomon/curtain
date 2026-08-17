@@ -243,10 +243,16 @@ One committed file, `curtain.json`, holding only facts that cannot go stale:
 }
 ```
 
+A `fingerprint` is what the app must actually serve, so it does double duty: it
+identifies a listener nothing else claims, and it is the health check on your own
+server. Answering is not working, since a dev server with a broken build answers
+500 to everything, and a walk filmed against that looks like a broken feature.
+
 `env` names the gitignored files an app needs, which is exactly what a fresh clone or
 worktree is missing. The values live once per project on your machine, in a store keyed
 by `name`; every checkout reaches them through a symlink that `curtain up` creates
-itself. The schema stays in your committed `.env.example`, so a branch that adds a
+itself. If your project already keeps its values somewhere, name that directory with
+`"envStore"` and Curtain uses it instead of inventing a second one. The schema stays in your committed `.env.example`, so a branch that adds a
 variable is caught by name, and the values never appear in any output.
 
 `envs` declares your deployed hostnames so a recording can refuse them: a walk

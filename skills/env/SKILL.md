@@ -20,6 +20,11 @@ symlinked into every checkout).
 | `ENV_CONFLICT` | The checkout file and the store disagree. Show both paths, let the user reconcile; never pick a side |
 | `NO_PROJECT_NAME` | Add a top-level `"name"` to curtain.json; it keys the store |
 
+**Before the interview, ask whether this project already keeps its values
+somewhere.** Many do, from before Curtain. Point `"envStore"` at that directory
+and the existing values are found as they are; adopting instead would copy live
+credentials into a second store, and then two files have to be kept in step.
+
 ## The interview, when values exist nowhere
 
 1. Read `.env.example` for the key names. Ask the user for the values in one
@@ -34,10 +39,13 @@ is created automatically.
 
 ```json
 { "name": "myproject",
+  "envStore": "~/.config/myproject",
   "apps": { "admin": { "start": "...", "env": [".env.local"] } } }
 ```
 
-Paths are relative to curtain.json. The app must read the file itself (most
+Paths are relative to curtain.json, and mirrored inside the store, so an
+existing store laid out like the checkout needs no migration. `envStore` is
+optional: without it the store is `~/.config/curtain/<name>/`. The app must read the file itself (most
 frameworks do; a bare Node server wants `node --env-file=.env.local ...`):
 Curtain never injects variables into a process, it only makes the file exist.
 

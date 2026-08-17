@@ -187,3 +187,89 @@ test('the artifacts root is the state directory and nothing is written', async (
       'resolve must not have created the state directory')
   } finally { rmSync(dir, { recursive: true, force: true }) }
 })
+
+// v0.5.2. `probe` accepts any HTTP status by design, so a dev server with a
+// broken build answers 500 and used to pass as live. A declared fingerprint is
+// the app's own statement of what it must serve, so it decides health too.
+const FINGERPRINTED = {
+  apps: {
+    admin: {
+      start: 'node app.mjs admin',
+      ready: 'ready',
+      fingerprint: { path: '/login', expect: 'type="password"' },
+    },
+  },
+}
+
+const claimed = (dir) => writeRunfile(dir, {
+  admin: {
+    app: 'admin', pid: process.pid, url: 'http://localhost:4000', port: 4000, ready: true,
+    log: '/tmp/admin.log',
+  },
+})
+
+test('a claimed server that answers without its fingerprint is UNHEALTHY', async () => {
+  const dir = repo(FINGERPRINTED)
+  try {
+    claimed(dir)
+    const r = await resolve({
+      cwd: dir,
+      io: {
+        git: git(dir),
+        probe: fakeProbe({ 'http://localhost:4000': { ok: true, status: 500 } }),
+        matchFingerprint: async () => false,
+        listeners: () => ({ items: [], problems: [] }),
+      },
+    })
+    const p = r.problems.find((x) => x.code === 'UNHEALTHY')
+    assert.ok(p, 'answering with the wrong body is not health')
+    assert.equal(p.app, 'admin')
+    assert.equal(p.port, 4000)
+    // The fix has to name the likeliest cause, which is a checkout nobody built.
+    assert.match(p.fix, /dependencies installed/)
+    assert.match(p.fix, /admin\.log/, 'and where to read what went wrong')
+
+    // Still a service, deliberately: dropping it would start a second copy on a
+    // port already held.
+    assert.equal(r.services.admin.healthy, false)
+    assert.equal(r.problems.find((x) => x.code === 'NOT_RUNNING'), undefined)
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('a claimed server that matches its fingerprint is left alone', async () => {
+  const dir = repo(FINGERPRINTED)
+  try {
+    claimed(dir)
+    const r = await resolve({
+      cwd: dir,
+      io: {
+        git: git(dir),
+        probe: fakeProbe({ 'http://localhost:4000': { ok: true, status: 200 } }),
+        matchFingerprint: async () => true,
+        listeners: () => ({ items: [], problems: [] }),
+      },
+    })
+    assert.equal(r.problems.find((x) => x.code === 'UNHEALTHY'), undefined)
+    assert.equal(r.services.admin.healthy, undefined, 'health is only stamped when it failed')
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})
+
+test('an app with no fingerprint is never health-checked', async () => {
+  const dir = repo(CONFIG)
+  try {
+    claimed(dir)
+    let asked = 0
+    const r = await resolve({
+      cwd: dir,
+      io: {
+        git: git(dir),
+        probe: fakeProbe({ 'http://localhost:4000': { ok: true, status: 500 } }),
+        matchFingerprint: async () => { asked++; return false },
+        listeners: () => ({ items: [], problems: [] }),
+      },
+    })
+    assert.equal(asked, 0, 'with nothing declared there is nothing to check against')
+    assert.equal(r.problems.find((x) => x.code === 'UNHEALTHY'), undefined)
+    assert.equal(r.services.admin.port, 4000)
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})

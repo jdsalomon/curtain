@@ -159,3 +159,31 @@ test('a walk that names a seed which does not exist says so', async () => {
     assert.equal(r.problems.at(-1).code, 'NO_SUCH_SEED')
   } finally { rmSync(dir, { recursive: true, force: true }) }
 })
+
+// v0.5.2. The failure this closes was observed in the wild: a fresh worktree
+// answered 500 on every route because nothing had been installed or built, and
+// the walk recorded a video of a broken app before timing out inside it.
+test('a walk refuses to film a server that answers without its fingerprint', async () => {
+  const url = 'http://localhost:4300'
+  const dir = repo({ show: 'export default async () => {}' }, {
+    apps: {
+      admin: {
+        start: 'x',
+        ready: 'ready',
+        fingerprint: { path: '/login', expect: 'type="password"' },
+      },
+    },
+  })
+  try {
+    claim(dir, url, 4300)
+    const r = await walk('show', {
+      cwd: dir,
+      io: { ...liveAt(dir, url), matchFingerprint: async () => false },
+    })
+    assert.equal(r.passed, false)
+    assert.equal(r.exitCode, 1)
+    assert.equal(r.problems[0].code, 'UNHEALTHY', 'the reason must be the health, not a timeout')
+    assert.equal(r.problems[0].app, 'admin')
+    assert.equal(r.artifacts, null, 'nothing is recorded, so no stale mp4 is replaced')
+  } finally { rmSync(dir, { recursive: true, force: true }) }
+})

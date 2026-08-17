@@ -150,3 +150,53 @@ test('a missing checkout file with store values checks drift against the store',
       'drift is visible before the link exists, from the store copy')
   })
 })
+
+// v0.5.2. A project whose values predate Curtain says where they live, rather
+// than being told they exist nowhere and invited to make a second copy.
+test('envStore wins over the invented store, and expands a leading ~', () => {
+  scene(() => {
+    assert.equal(storeRoot('proj', '/opt/values'), '/opt/values')
+    assert.equal(storeRoot('proj', '~/.config/other'), join(process.env.HOME, '.config/other'))
+    assert.match(storeRoot('proj'), /xdg\/curtain\/proj$/, 'without it, nothing changes')
+  })
+})
+
+test('an envStore keeps the checkout layout, so an existing store needs no migration', () => {
+  scene((repo) => {
+    const store = join(repo, '..', 'values')
+    mkdirSync(join(store, 'apps/admin'), { recursive: true })
+    writeFileSync(join(store, 'apps/admin/.env.local'), 'API_KEY=x\n')
+    const config = {
+      envStore: store,
+      apps: { admin: { start: 'x', env: ['apps/admin/.env.local'] } },
+    }
+    const status = envStatus({ configDir: repo, config })
+    const [entry] = status.entries
+    assert.equal(entry.canonical, join(store, 'apps/admin/.env.local'))
+    assert.equal(entry.canonicalExists, true, 'the values already there are found')
+    // Missing in the checkout but present in the store is a link away, which is
+    // what `up` does by itself. It must NOT read as "values exist nowhere".
+    const codes = envProblems(status).map((p) => p.code)
+    assert.deepEqual(codes, ['MISSING_ENV'])
+  })
+})
+
+test('an envStore needs no project name, because the name only keys an invented store', () => {
+  scene((repo) => {
+    const store = join(repo, '..', 'values')
+    mkdirSync(store, { recursive: true })
+    const config = { envStore: store, apps: { admin: { start: 'x', env: ['.env.local'] } } }
+    const codes = envProblems(envStatus({ configDir: repo, config })).map((p) => p.code)
+    assert.ok(!codes.includes('NO_PROJECT_NAME'), 'the store is named directly')
+  })
+})
+
+test('with neither a name nor an envStore, the fix offers both', () => {
+  scene((repo) => {
+    const config = { apps: { admin: { start: 'x', env: ['.env.local'] } } }
+    const [p] = envProblems(envStatus({ configDir: repo, config }))
+    assert.equal(p.code, 'NO_PROJECT_NAME')
+    assert.match(p.fix, /"name"/)
+    assert.match(p.fix, /"envStore"/)
+  })
+})

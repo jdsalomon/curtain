@@ -25,3 +25,9 @@ test('NOT_RUNNING does not block, or up could never run', () => {
   assert.equal(isBlocking([problem('NO_CONFIG', {})]), true)
   assert.equal(isBlocking([]), false)
 })
+
+test('UNHEALTHY blocks, because a server answering the wrong thing wastes a recording', () => {
+  assert.equal(isBlocking([problem('UNHEALTHY', { app: 'admin', port: 3000 })]), true)
+  // NOT_ANSWERING stays information: it is what `up` exists to fix.
+  assert.equal(isBlocking([problem('NOT_ANSWERING', { app: 'admin' })]), false)
+})
