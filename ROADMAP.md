@@ -181,20 +181,22 @@ Three rules keep it honest, and they are deliberate limits rather than caveats:
 
 ## Which agent harness
 
-Curtain is **not built for one agent harness.** The engine is a zero-dependency Node CLI plus an MCP
-server, which is deliberately the most portable shape available: a command any harness can run, and a
-protocol several already speak. Nothing under `lib/` knows what is calling it.
+Curtain is **not built for one agent harness.** The engine is a zero-dependency Node CLI, which is
+deliberately the most portable shape available: a command any harness can run, with `--json` and
+stable problem codes instead of prose to parse. Nothing under `lib/` knows what is calling it.
 
 What is harness-specific is only the packaging. Today that means a Claude Code plugin manifest, which
-buys skill discovery, an MCP server that installs with the plugin, and `bin/` on the tool `PATH`.
-Everywhere else you clone it, put the binary on your `PATH`, and register the MCP server yourself.
+buys skill discovery, `bin/` on the tool `PATH`, and Playwright's own MCP server installed alongside
+for interactive browser work. Curtain never calls that server: a walk drives Playwright in process.
+Everywhere else you clone it and put the binary on your `PATH`.
 
 The prose half is markdown with YAML frontmatter, which is close enough to what most harnesses want
 that porting it is editing, not rewriting.
 
 **Planned:** first-class packaging for other harnesses, once there is more than one shape worth
 supporting. Not sooner, because guessing at an abstraction before the second real case is how you get
-an adapter layer that fits nothing.
+an adapter layer that fits nothing. An MCP server exposing Curtain's own commands belongs to the same
+rule: it arrives when a harness turns up that cannot simply run one, and not before.
 
 ## What "released" means here
 

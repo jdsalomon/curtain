@@ -185,9 +185,10 @@ in this worktree, is the resolver's problem and never the walk's.
 
 ## Install
 
-Curtain is a **zero-dependency Node CLI plus an MCP server**, so it is not tied to one
-agent harness. Claude Code gets a plugin manifest today; anything that can run a command
-and speak MCP can drive it.
+Curtain is a **zero-dependency Node CLI**, so it is not tied to one agent harness. Every
+command takes `--json` and fails with a stable code and a `fix` line, which is the whole
+interface: anything that can run a command can drive it. Claude Code gets a plugin
+manifest today.
 
 <details open>
 <summary><b>Claude Code</b></summary>
@@ -211,8 +212,10 @@ cd curtain && npm link          # or just put ./bin on your PATH
 curtain --version
 ```
 
-Then register the browser MCP server the way [`.mcp.json`](.mcp.json) does. The CLI is
-the whole engine: nothing under `lib/` has harness-specific code. The prose half lives
+[`.mcp.json`](.mcp.json) registers Playwright's own MCP server, which ships with the
+plugin so your harness can drive a browser interactively. Curtain never calls it, since a
+walk drives Playwright in process; register it only if you want it. The CLI is the whole
+engine: nothing under `lib/` has harness-specific code. The prose half lives
 in [`skills/`](skills/) as markdown with YAML frontmatter, so point your harness at
 those files or read them yourself.
 

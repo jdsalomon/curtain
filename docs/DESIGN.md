@@ -45,8 +45,8 @@ Global engine, per-project facts, per-project artifacts. Nothing about your proj
 inside the plugin.
 
 A second boundary matters as much: **nothing under `lib/` knows which agent harness is calling it.**
-The engine is a zero-dependency Node CLI plus an MCP server, because that is the most portable shape
-on offer, a command anything can run and a protocol several harnesses already speak. Harness-specific
+The engine is a zero-dependency Node CLI, because that is the most portable shape on offer: a command
+anything can run, with `--json` and stable problem codes instead of prose to parse. Harness-specific
 packaging is a thin outer layer, currently a Claude Code plugin manifest, and it is the only part that
 would need writing again for a second harness.
 
