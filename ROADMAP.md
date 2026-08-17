@@ -11,8 +11,8 @@ An agent that can do that stops reporting and starts showing. That is the whole 
 between "I implemented it" and "here it is working" is where trust in agentic work is currently lost,
 and it is a tooling gap rather than a model one.
 
-**Status: v0.5.0 is the current release.** Everything after it is a plan, not a promise, and the
-versions are the order of work rather than dates.
+**Status: v0.5.1 is the current release, and v0.5.0 was the last to add a command.** Everything
+after it is a plan, not a promise, and the versions are the order of work rather than dates.
 
 ## Why this exists
 

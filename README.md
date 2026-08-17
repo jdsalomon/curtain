@@ -20,10 +20,10 @@ drive the real app in a real browser, record what happened, tear it down.
 
 ---
 
-> **v0.5.0 cleans up.** v0.1.0 built the somewhere, v0.2.0 films it, and
-> v0.4.0 gave a workspace data of its own; this one takes it back, along with the
-> recordings, on request and never before. Demos and tests as one declaration are
-> next. The
+> **v0.5.1 is current, and v0.5.0 cleans up.** v0.1.0 built the somewhere, v0.2.0
+> films it, and v0.4.0 gave a workspace data of its own; the last feature release
+> takes it back, along with the recordings, on request and never before. Demos and
+> tests as one declaration are next. The
 > [roadmap](ROADMAP.md) marks every unreleased version as planned, on purpose.
 
 ## Try it in under a minute
@@ -74,7 +74,10 @@ target   admin at http://localhost:52902
 webm     .curtain/walks/_broken/video/page@2d23da55.webm
 
 WALK_FAILED
-  locator.boundingBox: Timeout 30000ms exceeded.
+  locator.boundingBox: Timeout 10000ms exceeded.
+  Call log:
+    - waiting for getByRole('button', { name: 'A button that does not exist' })
+
   the recording up to the failure is at .curtain/walks/_broken/video/page@2d23da55.webm
 
 FAILED
@@ -260,9 +263,9 @@ disposable.**
 Bring the stack up. Give it data of its own. Drive the real app. Record what happened.
 Tear it down. One command each, in a repo Curtain has never seen.
 
-Isolated data per workspace, one declaration rendered as either a demo or a test
-suite, and a cache that makes each new recording cheaper are the releases after this
-one. See [ROADMAP.md](ROADMAP.md).
+One declaration rendered as either a demo or a test suite, a cache that makes each new
+recording cheaper than the last, and layout truth across every viewport are the releases
+after this one. See [ROADMAP.md](ROADMAP.md).
 
 ## The rest
 
